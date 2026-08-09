@@ -580,7 +580,6 @@ function defaultState(){
       {id:"h5", name:"Sono (7h30)", area:"saude", frequency:7, checks:{}}
     ],
     reviews: [],
-    finance: { reserva: 33000, metaReserva: 60000, fundoCarro: 0, metaFundoCarro: 30000 },
     decisions: [
       "Não abandonar objetivos de longo prazo apenas porque são numerosos.",
       "Não transformar todos os objetivos em prazos rígidos — usar datas apenas quando há necessidade concreta.",
@@ -605,7 +604,6 @@ async function loadState(){
     if(data && data.data){
       state = data.data;
       const def = defaultState();
-      if(!state.finance) state.finance = def.finance;
       if(!state.reviews) state.reviews = [];
       if(!state.decisions) state.decisions = def.decisions;
       if(!state.areas) state.areas = def.areas;
@@ -722,21 +720,19 @@ function renderDashboard(){
   const order = {"Muito Alta":0,"Alta":1,"Média-Alta":2,"Média":3,"Baixa":4};
   const sorted = [...activeGoals].sort((a,b)=>(order[a.priority]??5)-(order[b.priority]??5));
 
-  // metrics: 3 metas de maior prioridade + finança
+  // metrics: 4 metas de maior prioridade (inclui automaticamente metas em R$, se estiverem entre as prioritárias)
   const grid = document.getElementById('dashMetrics');
   grid.innerHTML = '';
-  sorted.slice(0,3).forEach(g=>{
+  sorted.slice(0,4).forEach(g=>{
     grid.innerHTML += `<div class="card metric-card">
       <div class="metric-label">${areaName(g.area)}</div>
       <div class="metric-value">${goalProgress(g)}%</div>
       <div class="metric-description">${escapeHtml(g.name)}</div>
     </div>`;
   });
-  grid.innerHTML += `<div class="card metric-card">
-    <div class="metric-label">Reserva financeira</div>
-    <div class="metric-value">R$ ${Number(state.finance.reserva).toLocaleString('pt-BR')}</div>
-    <div class="metric-description">Segurança e liberdade financeira.</div>
-  </div>`;
+  if(!sorted.length){
+    grid.innerHTML = `<div class="card metric-card"><div class="metric-label">Metas</div><div class="metric-value">—</div><div class="metric-description">Nenhuma meta ativa ainda.</div></div>`;
+  }
 
   // priorities list = mesma ordenação, até 5 metas
   const pl = document.getElementById('dashPriorities');
@@ -764,14 +760,16 @@ function renderDashboard(){
     </div>`;
   }).join('') : `<div class="empty-note">Nenhum hábito cadastrado ainda.</div>`;
 
-  // finance
+  // finance — lê diretamente das metas com tipo de métrica "Reais (R$)", sem número separado
   const fg = document.getElementById('dashFinance');
-  const f = state.finance;
-  fg.innerHTML = `
-    <div class="fin-item"><div class="fl">Reserva</div><div class="fv">R$ ${Number(f.reserva).toLocaleString('pt-BR')} / R$ ${Number(f.metaReserva).toLocaleString('pt-BR')}</div></div>
-    <div class="fin-item"><div class="fl">Fundo carro</div><div class="fv">R$ ${Number(f.fundoCarro).toLocaleString('pt-BR')} / R$ ${Number(f.metaFundoCarro).toLocaleString('pt-BR')}</div></div>
-    <div class="fin-item"><div class="fl">Progresso reserva</div><div class="fv">${f.metaReserva>0?Math.round(f.reserva/f.metaReserva*100):0}%</div></div>
-  `;
+  const currencyGoals = state.goals.filter(g=>g.metricType==='currency');
+  fg.innerHTML = currencyGoals.length ? currencyGoals.map(g=>`
+    <div class="fin-item">
+      <div class="fl">${escapeHtml(g.name)}</div>
+      <div class="fv">R$ ${Number(g.current).toLocaleString('pt-BR')} / R$ ${Number(g.target).toLocaleString('pt-BR')}</div>
+      <div class="small muted" style="margin-top:5px">${goalProgress(g)}% concluído${g.status!=='active'?' · arquivada':''}</div>
+    </div>
+  `).join('') : `<div class="empty-note">Nenhuma meta com métrica em R$ cadastrada ainda. Crie uma em "Metas" com o tipo "Reais (R$)".</div>`;
 }
 
 /* ============================================================
