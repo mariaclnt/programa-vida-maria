@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f2ed">
+<title>Agora — Sistema Operacional Pessoal</title>
+<style>
+  :root{
+    --bg:#f5f2ed; --card:#fffdfa; --ink:#202020; --muted:#77736d;
+    --line:#e5e0d8; --blue:#087fe8; --dark:#242424; --soft:#eeece8;
+    --danger:#b83b35; --success:#2d7d54; --radius:24px;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  body{margin:0;color:var(--ink);background:var(--bg);min-height:100vh}
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  .app{max-width:980px;margin:0 auto;padding:28px 18px 100px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:22px}
+  .eyebrow{font-size:12px;letter-spacing:3px;color:var(--muted);font-weight:700;margin-bottom:8px}
+  h1{font-size:46px;line-height:1;margin:0;letter-spacing:-2px}
+  .reset{border:0;background:none;color:var(--muted);text-decoration:underline;padding:8px 0}
+  .intro{color:var(--muted);font-size:17px;line-height:1.45;margin:10px 0 24px}
+  .pill{display:inline-block;background:var(--soft);border-radius:999px;padding:6px 10px;margin-right:5px;font-size:12px}
+  .hero{background:var(--dark);color:white;border-radius:30px;padding:30px;margin-bottom:18px}
+  .hero .eyebrow{color:#c9c7c3}
+  .hero h2{font-size:34px;line-height:1.05;margin:10px 0}
+  .hero p{color:#d2d0cc;margin:0 0 22px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{border:0;border-radius:16px;padding:13px 18px;font-weight:700}
+  .btn-primary{background:white;color:#1d1d1d}
+  .btn-secondary{background:#3b3a38;color:white;border:1px solid #5a5854}
+  .btn-blue{background:var(--blue);color:white}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px}
+  .metric-label{font-size:12px;letter-spacing:2px;color:var(--muted);font-weight:800}
+  .metric-value{font-size:34px;font-weight:800;color:var(--blue);margin:8px 0}
+  .metric-note{color:var(--muted);line-height:1.35}
+  section{display:none}
+  section.active{display:block}
+  .section-title{font-size:30px;letter-spacing:-1px;margin:28px 0 16px}
+  .section-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .list{display:grid;gap:12px}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+  .item-top{display:flex;justify-content:space-between;gap:15px}
+  .item h3{margin:0 0 5px;font-size:20px}
+  .item p{margin:0;color:var(--muted);line-height:1.4}
+  .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1px;background:var(--soft);padding:5px 8px;border-radius:999px;margin-top:10px}
+  .progress{height:9px;background:#e7e4df;border-radius:99px;overflow:hidden;margin:14px 0 8px}
+  .bar{height:100%;background:var(--blue);border-radius:99px}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .row-between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .small{font-size:13px;color:var(--muted)}
+  .icon-btn{border:0;background:var(--soft);border-radius:12px;padding:8px 10px}
+  .danger{color:var(--danger)}
+  .empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #d6d1c8;border-radius:20px}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:flex-end;justify-content:center;z-index:20}
+  .modal.open{display:flex}
+  .sheet{background:var(--card);width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:28px 28px 0 0;padding:24px}
+  .sheet h2{margin-top:0}
+  label{display:block;font-size:13px;font-weight:800;margin:15px 0 7px}
+  input,select,textarea{width:100%;border:1px solid var(--line);background:white;border-radius:14px;padding:13px;color:var(--ink);outline:none}
+  textarea{min-height:90px;resize:vertical}
+  input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+  .form-actions{display:flex;gap:10px;margin-top:20px}
+  .form-actions .btn{flex:1}
+  nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(980px,100%);background:rgba(255,253,250,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px max(8px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));z-index:10}
+  nav button{border:0;background:none;color:#77736d;padding:7px 2px;font-size:12px}
+  nav button.active{color:var(--ink);font-weight:800}
+  .check{width:22px;height:22px;border-radius:50%;border:2px solid #aaa;background:white;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .check.done{background:var(--blue);border-color:var(--blue);color:white}
+  .routine-day{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+  .day-dots{display:flex;gap:5px}
+  .dot{width:12px;height:12px;border-radius:50%;background:#ddd8d0}
+  .dot.done{background:var(--blue)}
+  .notice{background:#edf6ff;border-radius:18px;padding:15px;color:#24577f;margin:12px 0}
+  @media(min-width:720px){
+    .modal{align-items:center;padding:20px}
+    .sheet{border-radius:28px}
+  }
+  @media(max-width:560px){
+    .app{padding-top:22px}
+    h1{font-size:40px}
+    .hero h2{font-size:29px}
+    .grid{grid-template-columns:1fr 1fr}
+    .card{padding:18px}
+    .metric-value{font-size:29px}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div>
+      <div class="eyebrow">SISTEMA OPERACIONAL PESSOAL</div>
+      <h1>Agora</h1>
+    </div>
+    <button class="reset" onclick="resetDay()">Resetar meu dia</button>
+  </header>
+
+  <div class="intro">
+    <span class="pill">v1</span>
+    uma visão simples do que importa, sem transformar sua vida em uma planilha.
+  </div>
+
+  <section id="screen-agora" class="active"></section>
+  <section id="screen-visao"></section>
+  <section id="screen-metas"></section>
+  <section id="screen-rotina"></section>
+  <section id="screen-revisao"></section>
+</div>
+
+<nav>
+  <button data-screen="agora" onclick="showScreen('agora')">Agora</button>
+  <button data-screen="visao" onclick="showScreen('visao')">Visão</button>
+  <button data-screen="metas" onclick="showScreen('metas')">Metas</button>
+  <button data-screen="rotina" onclick="showScreen('rotina')">Rotina</button>
+  <button data-screen="revisao" onclick="showScreen('revisao')">Revisão</button>
+</nav>
+
+<div id="modal" class="modal" onclick="if(event.target===this) closeModal()">
+  <div class="sheet" id="modal-content"></div>
+</div>
+
+<script>
+const KEY = "sistema_operacional_pessoal_v1";
+
+const defaultData = {
+  vision: "Construir uma vida que faça sentido para mim, com liberdade, crescimento e espaço para as coisas que importam.",
+  goals: [
+    {id:1,name:"Exemplo: construir uma reserva financeira",area:"Finanças",deadline:"2026-12-31",progress:20,note:"Você pode apagar este exemplo e cadastrar suas próprias metas."},
+    {id:2,name:"Exemplo: desenvolver minha carreira",area:"Carreira",deadline:"2026-12-31",progress:45,note:"Defina o que precisa acontecer para considerar isso concluído."}
+  ],
+  tasks: [
+    {id:1,name:"Definir minhas 3 prioridades da semana",area:"Vida",minutes:15,priority:3,done:false},
+    {id:2,name:"Dar o primeiro passo de uma meta importante",area:"Carreira",minutes:30,priority:2,done:false}
+  ],
+  routines: [
+    {id:1,name:"Treino",days:[1,3,5],done:[]},
+    {id:2,name:"Revisar o dia",days:[1,2,3,4,5,6,0],done:[]}
+  ],
+  reviews:[]
+};
+
+let data = load();
+
+function load(){
+  try{
+    const saved = localStorage.getItem(KEY);
+    return saved ? {...defaultData,...JSON.parse(saved)} : structuredClone(defaultData);
+  }catch(e){ return structuredClone(defaultData); }
+}
+function save(){
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function todayKey(){ return new Date().toISOString().slice(0,10); }
+function formatDate(d){
+  if(!d) return "Sem prazo";
+  const [y,m,day]=d.split("-");
+  return `${day}/${m}/${y}`;
+}
+function areaIcon(area){
+  const map={"Carreira":"💼","Finanças":"💰","Casa":"🏠","Relacionamentos":"❤️","Desenvolvimento":"🧠","Experiências":"✈️","Saúde":"🏃","Lazer":"🎨","Vida":"◌"};
+  return map[area] || "◌";
+}
+function daysLeft(date){
+  if(!date) return 9999;
+  const a=new Date(); a.setHours(0,0,0,0);
+  const b=new Date(date+"T00:00:00");
+  return Math.ceil((b-a)/86400000);
+}
+function nextTask(){
+  const open=data.tasks.filter(t=>!t.done);
+  if(!open.length) return null;
+  return open.sort((a,b)=>(b.priority||0)-(a.priority||0))[0];
+}
+function showScreen(name){
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+name).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.screen===name));
+  render();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function render(){
+  renderAgora(); renderVisao(); renderMetas(); renderRotina(); renderRevisao();
+}
+
+function renderAgora(){
+  const t=nextTask();
+  const completed=data.tasks.filter(x=>x.done).length;
+  const demand=data.tasks.length ? Math.round(completed/data.tasks.length*100) : 0;
+  const goalsAvg=data.goals.length ? Math.round(data.goals.reduce((s,g)=>s+Number(g.progress||0),0)/data.goals.length) : 0;
+  document.getElementById("screen-agora").innerHTML=`
+    <div class="hero">
+      <div class="eyebrow">O QUE EU FAÇO AGORA?</div>
+      ${t ? `
+        <h2>${esc(t.name)}</h2>
+        <p>${esc(t.area)} · ${t.minutes||5} min · prioridade ${t.priority||1}/3</p>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="completeTask(${t.id})">Feito</button>
+          <button class="btn btn-secondary" onclick="skipTask(${t.id})">Não consigo agora</button>
+        </div>
+      ` : `
+        <h2>Você está sem ações abertas.</h2>
+        <p>Use esse espaço para escolher o próximo movimento, não para inventar trabalho.</p>
+        <div class="actions"><button class="btn btn-primary" onclick="openTaskModal()">Adicionar ação</button></div>
+      `}
+    </div>
+
+    <div class="grid">
+      <div class="card"><div class="metric-label">HOJE</div><div class="metric-value">${completed}</div><div class="metric-note">ações concluídas nesta lista</div></div>
+      <div class="card"><div class="metric-label">METAS</div><div class="metric-value">${goalsAvg}%</div><div class="metric-note">progresso médio das metas</div></div>
+      <div class="card"><div class="metric-label">AÇÕES ABERTAS</div><div class="metric-value">${data.tasks.filter(x=>!x.done).length}</div><div class="metric-note">próximos movimentos cadastrados</div></div>
+      <div class="card"><div class="metric-label">ÁREAS</div><div class="metric-value">${new Set(data.goals.map(g=>g.area)).size}</div><div class="metric-note">áreas da vida com metas</div></div>
+    </div>
+
+    <div class="section-title">Depois</div>
+    <div class="card">
+      <div class="metric-label">PRÓXIMOS MOVIMENTOS</div>
+      <div style="margin-top:12px" class="list">
+        ${data.tasks.filter(x=>!x.done).slice(0,3).map(x=>`
+          <div class="row-between">
+            <div class="row"><span class="check" onclick="completeTask(${x.id})"></span><div><b>${esc(x.name)}</b><div class="small">${esc(x.area)} · ${x.minutes||5} min</div></div></div>
+            <button class="icon-btn" onclick="deleteTask(${x.id})">×</button>
+          </div>`).join("") || `<div class="empty">Nada pendente. Não invente tarefas só para preencher espaço.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderVisao(){
+  const g=data.goals;
+  document.getElementById("screen-visao").innerHTML=`
+    <div class="section-head"><div><div class="eyebrow">DIREÇÃO</div><div class="section-title">Minha visão</div></div><button class="btn btn-blue" onclick="editVision()">Editar</button></div>
+    <div class="card"><p style="font-size:24px;line-height:1.35;margin:0">${esc(data.vision)}</p></div>
+    <div class="section-title">Áreas da vida</div>
+    <div class="grid">
+      ${["Carreira","Finanças","Casa","Relacionamentos","Desenvolvimento","Experiências","Saúde","Lazer"].map(area=>{
+        const gs=g.filter(x=>x.area===area);
+        const avg=gs.length?Math.round(gs.reduce((s,x)=>s+Number(x.progress||0),0)/gs.length):0;
+        return `<div class="card"><div style="font-size:25px">${areaIcon(area)}</div><h3 style="margin:8px 0 2px">${area}</h3><div class="small">${gs.length} meta(s)</div><div class="progress"><div class="bar" style="width:${avg}%"></div></div><b>${avg}%</b></div>`;
+      }).join("")}
+    </div>
+  `;
+}
+
+function renderMetas(){
+  document.getElementById("screen-metas").innerHTML=`
+    <div class="section-head"><div><div class="eyebrow">DIREÇÃO → RESULTADO</div><div class="section-title">Metas</div></div><button class="btn btn-blue" onclick="openGoalModal()">+ Nova meta</button></div>
+    <div class="notice">Uma meta é um resultado que você quer alcançar. Depois, transforme-a em pequenos movimentos.</div>
+    <div class="list">
+      ${data.goals.map(g=>{
+        const left=daysLeft(g.deadline);
+        const deadlineText=left<0?`atrasada · ${Math.abs(left)}d`:left===0?"vence hoje":`${left}d restantes`;
+        return `<div class="item">
+          <div class="item-top"><div><h3>${esc(g.name)}</h3><p>${areaIcon(g.area)} ${esc(g.area)} · ${formatDate(g.deadline)}</p></div><button class="icon-btn" onclick="deleteGoal(${g.id})">×</button></div>
+          <div class="progress"><div class="bar" style="width:${Math.max(0,Math.min(100,g.progress||0))}%"></div></div>
+          <div class="row-between"><b>${Number(g.progress||0)}%</b><span class="small">${deadlineText}</span></div>
+          ${g.note?`<p style="margin-top:12px">${esc(g.note)}</p>`:""}
+          <div class="row" style="margin-top:13px"><button class="icon-btn" onclick="changeProgress(${g.id},-10)">−10</button><button class="icon-btn" onclick="changeProgress(${g.id},10)">+10</button><button class="icon-btn" onclick="editGoal(${g.id})">Editar</button></div>
+        </div>`;
+      }).join("") || `<div class="empty">Você ainda não cadastrou nenhuma meta.</div>`}
+    </div>
+  `;
+}
+
+function renderRotina(){
+  const today=new Date().getDay();
+  document.getElementById("screen-rotina").innerHTML=`
+    <div class="section-head"><div><div class="eyebrow">COMPORTAMENTOS</div><div class="section-title">Rotina</div></div><button class="btn btn-blue" onclick="openRoutineModal()">+ Nova rotina</button></div>
+    <div class="card">
+      <p style="margin-top:0;color:var(--muted)">Rotina não é meta. É aquilo que você repete para sustentar a vida que quer construir.</p>
+      ${data.routines.map(r=>`
+        <div class="routine-day">
+          <div><b>${esc(r.name)}</b><div class="small">${r.days.map(d=>["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][d]).join(" · ")}</div></div>
+          <button class="check ${r.done.includes(todayKey())?'done':''}" onclick="toggleRoutine(${r.id})">${r.done.includes(todayKey())?'✓':''}</button>
+        </div>`).join("") || `<div class="empty">Cadastre uma rotina.</div>`}
+    </div>
+  `;
+}
+
+function renderRevisao(){
+  const avg=data.goals.length?Math.round(data.goals.reduce((s,g)=>s+Number(g.progress||0),0)/data.goals.length):0;
+  document.getElementById("screen-revisao").innerHTML=`
+    <div class="section-head"><div><div class="eyebrow">PAUSA PARA OLHAR</div><div class="section-title">Revisão</div></div><button class="btn btn-blue" onclick="openReviewModal()">+ Registrar</button></div>
+    <div class="card">
+      <div class="metric-label">PERGUNTA DA VEZ</div>
+      <h2 style="font-size:28px;margin-bottom:8px">O que merece mais atenção na minha vida agora?</h2>
+      <p class="metric-note">Não tente consertar tudo. Escolha o ponto de maior impacto.</p>
+      <div class="progress"><div class="bar" style="width:${avg}%"></div></div>
+      <div class="small">${avg}% de progresso médio nas metas atuais.</div>
+    </div>
+    <div class="section-title">Histórico</div>
+    <div class="list">${data.reviews.slice().reverse().map(r=>`
+      <div class="item"><div class="small">${formatDate(r.date)}</div><h3>${esc(r.answer)}</h3>${r.action?`<p>Próximo movimento: ${esc(r.action)}</p>`:""}</div>
+    `).join("") || `<div class="empty">Ainda não há revisões. Uma revisão curta já é suficiente.</div>`}</div>
+  `;
+}
+
+function openModal(content){document.getElementById("modal-content").innerHTML=content;document.getElementById("modal").classList.add("open")}
+function closeModal(){document.getElementById("modal").classList.remove("open")}
+function editVision(){
+  openModal(`<h2>Minha visão</h2><label>Como você quer que sua vida seja?</label><textarea id="visionInput">${esc(data.vision)}</textarea><div class="form-actions"><button class="btn btn-secondary" onclick="closeModal()">Cancelar</button><button class="btn btn-blue" onclick="saveVision()">Salvar</button></div>`);
+}
+function saveVision(){data.vision=document.getElementById("visionInput").value.trim();save();closeModal();render()}
+function openGoalModal(id=null){
+  const g=id?data.goals.find(x=>x.id===id):{name:"",area:"Carreira",deadline:"",progress:0,note:""};
+  openModal(`<h2>${id?"Editar meta":"Nova meta"}</h2>
+    <label>O que você quer alcançar?</label><input id="gName" value="${esc(g.name)}" placeholder="Ex.: Fazer uma viagem internacional">
+    <label>Área</label><select id="gArea">${["Carreira","Finanças","Casa","Relacionamentos","Desenvolvimento","Experiências","Saúde","Lazer","Vida"].map(a=>`<option ${a===g.area?"selected":""}>${a}</option>`).join("")}</select>
+    <label>Prazo</label><input id="gDate" type="date" value="${g.deadline||""}">
+    <label>Progresso inicial (%)</label><input id="gProgress" type="number" min="0" max="100" value="${g.progress||0}">
+    <label>Por que isso importa? / observações</label><textarea id="gNote">${esc(g.note||"")}</textarea>
+    <div class="form-actions"><button class="btn btn-secondary" onclick="closeModal()">Cancelar</button><button class="btn btn-blue" onclick="saveGoal(${id||0})">Salvar</button></div>`);
+}
+function editGoal(id){openGoalModal(id)}
+function saveGoal(id){
+  const name=document.getElementById("gName").value.trim(); if(!name){alert("Coloque um nome para a meta.");return}
+  const obj={id:id||Date.now(),name,area:document.getElementById("gArea").value,deadline:document.getElementById("gDate").value,progress:Math.max(0,Math.min(100,Number(document.getElementById("gProgress").value)||0)),note:document.getElementById("gNote").value.trim()};
+  if(id){const i=data.goals.findIndex(x=>x.id===id);data.goals[i]=obj}else data.goals.push(obj);
+  save();closeModal();render();
+}
+function deleteGoal(id){if(confirm("Excluir esta meta?")){data.goals=data.goals.filter(x=>x.id!==id);save();render()}}
+function changeProgress(id,n){const g=data.goals.find(x=>x.id===id);g.progress=Math.max(0,Math.min(100,Number(g.progress||0)+n));save();render()}
+function openTaskModal(){
+  openModal(`<h2>Nova ação</h2><label>O que precisa acontecer?</label><input id="tName" placeholder="Ex.: pesquisar passagem para a viagem">
+  <label>Área</label><select id="tArea">${["Carreira","Finanças","Casa","Relacionamentos","Desenvolvimento","Experiências","Saúde","Lazer","Vida"].map(a=>`<option>${a}</option>`).join("")}</select>
+  <label>Tempo estimado (minutos)</label><input id="tMin" type="number" value="15" min="1">
+  <label>Prioridade</label><select id="tPri"><option value="1">1 — baixa</option><option value="2" selected>2 — média</option><option value="3">3 — alta</option></select>
+  <div class="form-actions"><button class="btn btn-secondary" onclick="closeModal()">Cancelar</button><button class="btn btn-blue" onclick="saveTask()">Salvar</button></div>`);
+}
+function saveTask(){
+  const name=document.getElementById("tName").value.trim();if(!name){alert("Coloque uma ação.");return}
+  data.tasks.push({id:Date.now(),name,area:document.getElementById("tArea").value,minutes:Number(document.getElementById("tMin").value)||5,priority:Number(document.getElementById("tPri").value),done:false});
+  save();closeModal();render();
+}
+function completeTask(id){const t=data.tasks.find(x=>x.id===id);if(t)t.done=true;save();render()}
+function skipTask(id){const t=data.tasks.find(x=>x.id===id);if(t){t.priority=Math.max(1,(t.priority||1)-1);data.tasks.push(data.tasks.splice(data.tasks.indexOf(t),1)[0]);}save();render()}
+function deleteTask(id){data.tasks=data.tasks.filter(x=>x.id!==id);save();render()}
+function openRoutineModal(){
+  openModal(`<h2>Nova rotina</h2><label>Nome</label><input id="rName" placeholder="Ex.: Caminhar">
+  <label>Dias</label><div class="row">${["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].map((d,i)=>`<label style="margin:0;font-weight:600"><input style="width:auto" type="checkbox" class="dayBox" value="${i}"> ${d}</label>`).join("")}</div>
+  <div class="form-actions"><button class="btn btn-secondary" onclick="closeModal()">Cancelar</button><button class="btn btn-blue" onclick="saveRoutine()">Salvar</button></div>`);
+}
+function saveRoutine(){
+  const name=document.getElementById("rName").value.trim();if(!name){alert("Coloque um nome.");return}
+  const days=[...document.querySelectorAll(".dayBox:checked")].map(x=>Number(x.value));if(!days.length){alert("Escolha pelo menos um dia.");return}
+  data.routines.push({id:Date.now(),name,days,done:[]});save();closeModal();render();
+}
+function toggleRoutine(id){
+  const r=data.routines.find(x=>x.id===id);const k=todayKey();const i=r.done.indexOf(k);if(i>=0)r.done.splice(i,1);else r.done.push(k);save();render();
+}
+function openReviewModal(){
+  openModal(`<h2>Revisão</h2><label>O que merece mais atenção na minha vida agora?</label><textarea id="rvAnswer" placeholder="Escreva uma resposta curta e honesta."></textarea>
+  <label>Qual é o próximo movimento?</label><input id="rvAction" placeholder="Uma ação concreta, não uma lista inteira.">
+  <div class="form-actions"><button class="btn btn-secondary" onclick="closeModal()">Cancelar</button><button class="btn btn-blue" onclick="saveReview()">Salvar</button></div>`);
+}
+function saveReview(){
+  const answer=document.getElementById("rvAnswer").value.trim();if(!answer){alert("Escreva pelo menos uma resposta.");return}
+  data.reviews.push({date:todayKey(),answer,action:document.getElementById("rvAction").value.trim()});save();closeModal();render();
+}
+function resetDay(){
+  if(!confirm("Isso vai limpar apenas as ações concluídas. Suas metas e rotinas continuarão intactas. Continuar?"))return;
+  data.tasks.forEach(t=>t.done=false);save();render();
+}
+render();
+</script>
+</body>
+</html>
