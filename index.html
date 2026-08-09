@@ -208,6 +208,33 @@ button{cursor:pointer}
 .habit-color-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
 .heatmap-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 .heatmap-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-soft)}
+
+.ai-review-result{margin-top:16px;padding:16px;background:var(--surface-soft);border-radius:14px;font-size:12.5px;line-height:1.75;white-space:pre-wrap}
+.ai-review-result.error{color:var(--red);background:var(--red-soft)}
+.ai-review-meta{margin-top:8px;font-size:10.5px;color:var(--text-soft)}
+.ai-review-loading{margin-top:16px;font-size:12px;color:var(--text-soft)}
+
+#aiCompanion{position:fixed;right:20px;bottom:20px;z-index:150;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.ai-companion-btn{width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;box-shadow:0 4px 16px rgba(0,0,0,.18);cursor:pointer;flex-shrink:0}
+.ai-companion-btn:hover{opacity:.9}
+.ai-tip-bubble{max-width:230px;background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 4px 14px;box-shadow:var(--shadow);padding:12px 14px;animation:aiTipIn .25s ease}
+@keyframes aiTipIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ai-tip-text{font-size:12px;line-height:1.5;color:var(--text)}
+.ai-tip-actions{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.ai-tip-link{background:none;border:none;color:var(--accent);font-size:11px;font-weight:700;text-decoration:underline;cursor:pointer;padding:0}
+.ai-tip-close{background:none;border:none;color:var(--text-soft);font-size:11px;cursor:pointer;padding:0}
+.ai-chat-panel{width:330px;max-width:calc(100vw - 40px);height:460px;max-height:70vh;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden}
+.ai-chat-header{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--border)}
+.ai-chat-title{font-size:13px;font-weight:700}
+.ai-chat-subtitle{font-size:10.5px;color:var(--text-soft);margin-top:2px}
+.ai-chat-messages{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.ai-msg{max-width:85%;padding:9px 12px;border-radius:14px;font-size:12px;line-height:1.55;white-space:pre-wrap}
+.ai-msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.assistant{align-self:flex-start;background:var(--surface-soft);color:var(--text);border-bottom-left-radius:4px}
+.ai-msg.typing{align-self:flex-start;color:var(--text-soft);font-style:italic}
+.ai-chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border)}
+.ai-chat-input-row input{flex:1;border:1px solid var(--border);border-radius:10px;padding:8px 11px;font-size:12.5px}
+.ai-chat-empty{color:var(--text-soft);font-size:12px;line-height:1.6;padding:6px 2px}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
 .cal-nav b{font-size:12px}
 
@@ -475,6 +502,14 @@ button{cursor:pointer}
             <p>O sistema deve permitir ajustar a rota sem transformar cada semana em uma avaliação de desempenho pessoal.</p>
           </div>
         </div>
+        <div class="card card-padding" id="aiReviewCard">
+          <div class="eyebrow">Assistente de revisão (IA)</div>
+          <p class="small muted" style="margin-top:6px">Analisa suas metas, projetos e hábitos agora e sugere onde focar nesta revisão.</p>
+          <div class="modal-actions" style="justify-content:flex-start;margin-top:12px">
+            <button class="button primary" id="aiReviewBtn" onclick="runAIReview()">✦ Analisar meu progresso</button>
+          </div>
+          <div id="aiReviewResult"></div>
+        </div>
         <div class="dashboard-columns">
           <div class="card card-padding">
             <div class="eyebrow">Nova revisão</div>
@@ -515,6 +550,31 @@ button{cursor:pointer}
   <div class="modal" id="modalBody"></div>
 </div>
 <div class="toast" id="toast"></div>
+
+<div id="aiCompanion">
+  <div class="ai-tip-bubble" id="aiTipBubble" style="display:none">
+    <div class="ai-tip-text" id="aiTipText"></div>
+    <div class="ai-tip-actions">
+      <button class="ai-tip-link" onclick="openChatFromTip()">conversar</button>
+      <button class="ai-tip-close" onclick="dismissTip()">✕</button>
+    </div>
+  </div>
+  <button class="ai-companion-btn" id="aiCompanionBtn" onclick="toggleAIChat()" title="Companheiro de evolução">✦</button>
+  <div class="ai-chat-panel" id="aiChatPanel" style="display:none">
+    <div class="ai-chat-header">
+      <div>
+        <div class="ai-chat-title">Companheiro de evolução</div>
+        <div class="ai-chat-subtitle">Sabe o que está no seu sistema agora</div>
+      </div>
+      <button class="button small icon" onclick="toggleAIChat()">✕</button>
+    </div>
+    <div class="ai-chat-messages" id="aiChatMessages"></div>
+    <div class="ai-chat-input-row">
+      <input id="aiChatInput" placeholder="Escreva algo..." onkeydown="if(event.key==='Enter'){sendAIChatMessage()}">
+      <button class="button small primary" id="aiChatSendBtn" onclick="sendAIChatMessage()">Enviar</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ============================================================
@@ -623,6 +683,7 @@ function defaultState(){
       {id:"h5", name:"Sono (7h30)", area:"saude", frequency:7, goalId:null, checks:{}}
     ],
     reviews: [],
+    aiChat: [],
     decisions: [
       "Não abandonar objetivos de longo prazo apenas porque são numerosos.",
       "Não transformar todos os objetivos em prazos rígidos — usar datas apenas quando há necessidade concreta.",
@@ -650,6 +711,7 @@ async function loadState(){
       if(!state.reviews) state.reviews = [];
       if(!state.decisions) state.decisions = def.decisions;
       if(!state.areas) state.areas = def.areas;
+      if(!state.aiChat) state.aiChat = [];
       (state.projects||[]).forEach(p=>{
         if(p.goalId && (!p.goalIds || !p.goalIds.length)) p.goalIds = [p.goalId];
         if(!p.goalIds) p.goalIds = [];
@@ -717,6 +779,7 @@ function showPage(pageName, button){
   document.getElementById('pageTitle').textContent = pageTitles[pageName] || "Meu Sistema";
   window.scrollTo({top:0,behavior:'smooth'});
   if(pageName==='reviews') renderReviewForm();
+  maybeShowTip(pageName);
 }
 
 function updateDate(){
@@ -1588,6 +1651,241 @@ function deleteReview(id){
   renderReviewHistory();
 }
 
+/* ---- Assistente de revisão (IA) ---- */
+function buildReviewContext(){
+  const activeGoals = state.goals.filter(g=>g.status==='active');
+  const goalsText = activeGoals.map(g=>{
+    const pct = goalProgress(g);
+    return `- ${g.name} (${areaName(g.area)}): ${pct}% concluída — ${goalMetricText(g)}${g.deadline?`, prazo ${fmtDate(g.deadline)}`:', sem prazo definido'}`;
+  }).join('\n') || 'Nenhuma meta ativa cadastrada.';
+
+  const projectsText = state.projects.map(p=>{
+    const pct = projectProgress(p);
+    const linkedGoalNames = projectGoals(p).map(g=>g.name).join(', ') || 'nenhuma meta vinculada';
+    return `- ${p.name} (status: ${p.status}): ${pct}% concluído — metas vinculadas: ${linkedGoalNames}`;
+  }).join('\n') || 'Nenhum projeto cadastrado.';
+
+  const habitsText = state.habits.map(h=>{
+    const streak = habitStreak(h);
+    const rate = habitCompletionRate(h);
+    const goal = h.goalId ? state.goals.find(g=>g.id===h.goalId) : null;
+    return `- ${h.name}: meta ${h.frequency}x/semana, sequência atual ${streak} dia(s), cumprimento nos últimos 30 dias ${rate}%${goal?`, sustenta a meta "${goal.name}"`:''}`;
+  }).join('\n') || 'Nenhum hábito cadastrado.';
+
+  const lastReview = state.reviews[0];
+  const lastReviewText = lastReview
+    ? `Última revisão (${lastReview.type==='weekly'?'semanal':'mensal'}, ${fmtDate(lastReview.date)}):\n` +
+      (lastReview.answers.filter(a=>a.answer).map(a=>`${a.question} ${a.answer}`).join('\n') || '(sem respostas preenchidas)')
+    : 'Nenhuma revisão anterior registrada.';
+
+  return `METAS ATIVAS:\n${goalsText}\n\nPROJETOS:\n${projectsText}\n\nHÁBITOS:\n${habitsText}\n\n${lastReviewText}`;
+}
+
+async function runAIReview(){
+  const btn = document.getElementById('aiReviewBtn');
+  const result = document.getElementById('aiReviewResult');
+  btn.disabled = true;
+  btn.textContent = 'Analisando...';
+  result.innerHTML = `<div class="ai-review-loading">Lendo suas metas, projetos e hábitos...</div>`;
+  try{
+    const context = buildReviewContext();
+    const cycleLabel = currentReviewType==='weekly'
+      ? 'semanal (tática, foco nos próximos 7 dias)'
+      : 'mensal (mais ampla, foco em padrões e ajustes de direção)';
+
+    const prompt = `Você é um assistente de revisão pessoal de produtividade. Analise o estado atual de metas, projetos e hábitos abaixo e escreva uma análise curta em português, para uma revisão ${cycleLabel}.
+
+Estruture a resposta em texto simples (sem markdown, sem asteriscos), com estas três seções, cada uma com o título em maiúsculas seguido de 2 a 4 frases ou bullets com "•":
+
+NO CAMINHO CERTO — o que está indo bem e deve continuar assim.
+ATENÇÃO — o que está estagnado, atrasado ou em risco, e por quê, se der pra inferir dos dados.
+AJUSTES SUGERIDOS — de 2 a 4 ações concretas e específicas para este ciclo.
+
+Seja direto, sem enrolação e sem frases motivacionais genéricas. Baseie-se apenas nos dados fornecidos abaixo.
+
+DADOS:
+${context}`;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    if(!response.ok) throw new Error('Falha na chamada da API');
+    const data = await response.json();
+    const text = (data.content||[]).map(b=>b.text||'').join('\n').trim();
+    if(!text) throw new Error('Resposta vazia');
+    result.innerHTML = `<div class="ai-review-result">${escapeHtml(text)}</div><div class="ai-review-meta">Gerado agora · com base nos dados atuais do seu sistema.</div>`;
+  } catch(err){
+    console.error(err);
+    result.innerHTML = `<div class="ai-review-result error">Não foi possível gerar a análise agora. Tente novamente em instantes.</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✦ Analisar meu progresso';
+  }
+}
+
+/* ============================================================
+   COMPANHEIRO DE EVOLUÇÃO (IA) — dicas + chat flutuante
+============================================================ */
+let tipDismissedThisSession = false;
+
+function pickCoachTip(pageName){
+  const today = todayStr();
+  const activeGoals = state.goals.filter(g=>g.status==='active');
+
+  if(pageName==='habits' || pageName==='dashboard'){
+    const brokenToday = state.habits.filter(h=>{
+      if(h.checks[today]) return false;
+      const y = new Date(); y.setDate(y.getDate()-1);
+      return !!h.checks[todayStr(y)] && habitStreak(h)===0;
+    });
+    if(brokenToday.length){
+      return `Sua sequência de "${brokenToday[0].name}" quebrou ontem. Bora retomar hoje?`;
+    }
+    const lowRate = state.habits.filter(h=>habitCompletionRate(h)<40);
+    if(lowRate.length){
+      return `"${lowRate[0].name}" está com cumprimento baixo esse mês. Vale rever se a frequência definida ainda faz sentido.`;
+    }
+    const goodStreak = state.habits.filter(h=>habitStreak(h)>=7).sort((a,b)=>habitStreak(b)-habitStreak(a));
+    if(goodStreak.length){
+      return `"${goodStreak[0].name}" está numa sequência de ${habitStreak(goodStreak[0])} dias. Isso está sustentando alguma meta direito.`;
+    }
+  }
+
+  if(pageName==='goals' || pageName==='dashboard'){
+    const withDeadline = activeGoals.filter(g=>g.deadline);
+    const soon = withDeadline.filter(g=>{
+      const d = new Date(g.deadline+'T00:00:00'); const diff = (d-new Date())/86400000;
+      return diff>=0 && diff<=14 && goalProgress(g)<80;
+    });
+    if(soon.length) return `"${soon[0].name}" tem prazo em breve e ainda está em ${goalProgress(soon[0])}%. Pode ser hora de focar nela.`;
+    const stalled = activeGoals.filter(g=>{
+      if(!g.history || !g.history.length) return goalProgress(g)===0;
+      const last = new Date(g.history[g.history.length-1].date);
+      return (new Date()-last)/86400000 > 14;
+    });
+    if(stalled.length) return `Faz tempo que "${stalled[0].name}" não recebe um registro de progresso. Ainda é prioridade?`;
+  }
+
+  if(pageName==='projects'){
+    const noGoal = state.projects.filter(p=>!(p.goalIds||[]).length);
+    if(noGoal.length) return `O projeto "${noGoal[0].name}" ainda não tem meta vinculada. Sem isso fica difícil saber quando ele está "pronto".`;
+    const stuck = state.projects.filter(p=>p.status==='Em andamento' && projectProgress(p)<20);
+    if(stuck.length) return `"${stuck[0].name}" está em andamento mas com pouco progresso. Vale quebrar em passos menores?`;
+  }
+
+  if(pageName==='reviews'){
+    if(!state.reviews.length) return `Você ainda não fez nenhuma revisão. Que tal começar pela semanal?`;
+    const last = new Date(state.reviews[0].date);
+    const days = Math.round((new Date()-last)/86400000);
+    if(days>=7) return `Já faz ${days} dias desde sua última revisão. Bom momento pra rodar a análise da IA aqui em cima.`;
+  }
+
+  return null;
+}
+
+function maybeShowTip(pageName){
+  if(tipDismissedThisSession) return;
+  const tip = pickCoachTip(pageName);
+  const bubble = document.getElementById('aiTipBubble');
+  if(!tip){ bubble.style.display = 'none'; return; }
+  document.getElementById('aiTipText').textContent = tip;
+  bubble.style.display = 'block';
+}
+
+function dismissTip(){
+  document.getElementById('aiTipBubble').style.display = 'none';
+  tipDismissedThisSession = true;
+}
+
+function openChatFromTip(){
+  document.getElementById('aiTipBubble').style.display = 'none';
+  toggleAIChat(true);
+}
+
+function toggleAIChat(forceOpen){
+  const panel = document.getElementById('aiChatPanel');
+  const isOpen = panel.style.display === 'flex';
+  const shouldOpen = forceOpen || !isOpen;
+  panel.style.display = shouldOpen ? 'flex' : 'none';
+  if(shouldOpen){
+    renderAIChatMessages();
+    setTimeout(()=>document.getElementById('aiChatInput').focus(), 50);
+  }
+}
+
+function renderAIChatMessages(){
+  const el = document.getElementById('aiChatMessages');
+  if(!state.aiChat.length){
+    el.innerHTML = `<div class="ai-chat-empty">Sou seu companheiro dentro do sistema — conheço suas metas, projetos e hábitos atuais. Pode perguntar, desabafar ou pensar alto por aqui.</div>`;
+  } else {
+    el.innerHTML = state.aiChat.map(m=>`<div class="ai-msg ${m.role}">${escapeHtml(m.content)}</div>`).join('');
+  }
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendAIChatMessage(){
+  const input = document.getElementById('aiChatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const sendBtn = document.getElementById('aiChatSendBtn');
+  state.aiChat.push({role:'user', content:text});
+  input.value = '';
+  renderAIChatMessages();
+  scheduleSave();
+
+  const el = document.getElementById('aiChatMessages');
+  const typing = document.createElement('div');
+  typing.className = 'ai-msg typing';
+  typing.textContent = 'digitando...';
+  el.appendChild(typing);
+  el.scrollTop = el.scrollHeight;
+  sendBtn.disabled = true;
+
+  try{
+    const context = buildReviewContext();
+    const systemPrompt = `Você é um companheiro de evolução pessoal dentro do sistema de metas, projetos e hábitos do usuário — não um assistente formal, mais um colega que acompanha a jornada dele de perto.
+
+Você conhece os dados atuais do sistema dele (abaixo). Use isso para conectar o que ele disser com o que já existe — uma meta, um projeto, um hábito — sempre que fizer sentido, sem precisar listar tudo de volta.
+
+Responda em português, em frases curtas por padrão (poucas linhas). Só se aprofunde se ele pedir mais. Sem markdown, sem asteriscos, sem tom de discurso motivacional genérico — direto, presente, real.
+
+DADOS ATUAIS DO SISTEMA:
+${context}`;
+
+    const history = state.aiChat.slice(-16).map(m=>({role:m.role, content:m.content}));
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 500,
+        system: systemPrompt,
+        messages: history
+      })
+    });
+    if(!response.ok) throw new Error('Falha na chamada da API');
+    const data = await response.json();
+    const reply = (data.content||[]).map(b=>b.text||'').join('\n').trim() || 'Não consegui pensar em nada agora. Tenta de novo?';
+    state.aiChat.push({role:'assistant', content:reply});
+  } catch(err){
+    console.error(err);
+    state.aiChat.push({role:'assistant', content:'Não consegui responder agora. Tenta de novo em instantes.'});
+  } finally {
+    typing.remove();
+    sendBtn.disabled = false;
+    if(state.aiChat.length > 40) state.aiChat = state.aiChat.slice(-40);
+    scheduleSave();
+    renderAIChatMessages();
+  }
+}
+
 /* ============================================================
    DECISÕES
 ============================================================ */
@@ -1629,6 +1927,7 @@ function renderAll(){
   renderHabits();
   renderDecisions();
   setReviewType('weekly');
+  maybeShowTip('dashboard');
 }
 
 initAuth();
