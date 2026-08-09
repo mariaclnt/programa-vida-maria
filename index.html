@@ -1,1262 +1,344 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#F7F5F0">
-
-  <title>Meu Sistema Operacional</title>
-
-  <style>
-    :root {
-      --bg: #f7f5f0;
-      --surface: #ffffff;
-      --surface-soft: #f1eee7;
-      --text: #252525;
-      --text-soft: #73706a;
-      --border: #dedbd3;
-      --accent: #252525;
-      --accent-soft: #e8e4dc;
-
-      --green: #687c68;
-      --green-soft: #e4ebe2;
-
-      --yellow: #a98b4d;
-      --yellow-soft: #f3ecd9;
-
-      --red: #9b625c;
-      --red-soft: #f1e3e0;
-
-      --blue: #64798a;
-      --blue-soft: #e4ebef;
-
-      --radius: 18px;
-      --radius-small: 11px;
-
-      --shadow: 0 2px 12px rgba(0,0,0,.04);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    /* =========================
-       APP SHELL
-    ========================= */
-
-    .app {
-      min-height: 100vh;
-      display: flex;
-    }
-
-    .sidebar {
-      width: 250px;
-      min-height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      padding: 28px 18px;
-      display: flex;
-      flex-direction: column;
-      z-index: 20;
-    }
-
-    .brand {
-      padding: 0 10px 28px;
-    }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -.03em;
-    }
-
-    .brand-subtitle {
-      margin-top: 3px;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .nav {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .nav-section {
-      margin: 18px 10px 7px;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-soft);
-      text-transform: uppercase;
-      letter-spacing: .09em;
-    }
-
-    .nav-button {
-      width: 100%;
-      border: 0;
-      background: transparent;
-      border-radius: 11px;
-      padding: 10px 11px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-align: left;
-      color: var(--text-soft);
-      transition: .15s ease;
-    }
-
-    .nav-button:hover {
-      background: var(--surface-soft);
-      color: var(--text);
-    }
-
-    .nav-button.active {
-      background: var(--accent);
-      color: white;
-    }
-
-    .nav-icon {
-      width: 20px;
-      text-align: center;
-      font-size: 15px;
-    }
-
-    .sidebar-bottom {
-      margin-top: auto;
-      padding: 14px 10px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .sidebar-quote {
-      font-size: 11px;
-      line-height: 1.55;
-      color: var(--text-soft);
-      font-style: italic;
-    }
-
-    .main {
-      width: calc(100% - 250px);
-      margin-left: 250px;
-      min-height: 100vh;
-    }
-
-    .topbar {
-      height: 72px;
-      background: rgba(247,245,240,.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 36px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .page-title {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -.025em;
-    }
-
-    .page-date {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .content {
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 34px 36px 70px;
-    }
-
-    /* =========================
-       GENERIC COMPONENTS
-    ========================= */
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-      animation: fadeIn .18s ease;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(3px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .section-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
-    .section-header h1 {
-      font-size: 30px;
-      letter-spacing: -.04em;
-      line-height: 1.1;
-    }
-
-    .section-header p {
-      margin-top: 7px;
-      max-width: 650px;
-      color: var(--text-soft);
-      font-size: 14px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .card-padding {
-      padding: 22px;
-    }
-
-    .eyebrow {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--text-soft);
-    }
-
-    .muted {
-      color: var(--text-soft);
-    }
-
-    .small {
-      font-size: 12px;
-    }
-
-    .button {
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--text);
-      border-radius: 10px;
-      padding: 9px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      transition: .15s ease;
-    }
-
-    .button:hover {
-      border-color: #bbb7ae;
-      background: var(--surface-soft);
-    }
-
-    .button.primary {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .button.primary:hover {
-      opacity: .88;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 700;
-      background: var(--accent-soft);
-      color: var(--text);
-    }
-
-    .tag.green {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    .tag.yellow {
-      background: var(--yellow-soft);
-      color: var(--yellow);
-    }
-
-    .tag.red {
-      background: var(--red-soft);
-      color: var(--red);
-    }
-
-    .tag.blue {
-      background: var(--blue-soft);
-      color: var(--blue);
-    }
-
-    .progress {
-      width: 100%;
-      height: 6px;
-      background: var(--surface-soft);
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: var(--accent);
-      border-radius: inherit;
-      transition: width .3s ease;
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 18px 0;
-    }
-
-    /* =========================
-       DASHBOARD
-    ========================= */
-
-    .hero {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 30px;
-      margin-bottom: 22px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      right: -120px;
-      top: -150px;
-      background: var(--surface-soft);
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 1;
-      max-width: 780px;
-    }
-
-    .hero h1 {
-      margin-top: 7px;
-      font-size: 32px;
-      line-height: 1.12;
-      letter-spacing: -.045em;
-    }
-
-    .hero p {
-      margin-top: 12px;
-      color: var(--text-soft);
-      font-size: 14px;
-      max-width: 700px;
-    }
-
-    .quote-card {
-      margin-top: 20px;
-      padding: 14px 16px;
-      background: var(--surface-soft);
-      border-radius: 12px;
-      font-size: 13px;
-      font-style: italic;
-      max-width: 600px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-
-    .metric-card {
-      padding: 19px;
-    }
-
-    .metric-label {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .metric-value {
-      margin-top: 6px;
-      font-size: 27px;
-      font-weight: 750;
-      letter-spacing: -.04em;
-    }
-
-    .metric-description {
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .dashboard-columns {
-      display: grid;
-      grid-template-columns: 1.35fr .9fr;
-      gap: 18px;
-    }
-
-    .priority-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .priority-item {
-      display: grid;
-      grid-template-columns: 32px 1fr auto;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-    }
-
-    .priority-number {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface-soft);
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .priority-title {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .priority-subtitle {
-      margin-top: 2px;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .priority-progress {
-      width: 90px;
-    }
-
-    .today-list {
-      margin-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .today-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px;
-      border-radius: 11px;
-      background: var(--surface-soft);
-    }
-
-    .check {
-      width: 18px;
-      height: 18px;
-      border: 1px solid #bdb9b0;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: white;
-    }
-
-    .today-item span {
-      font-size: 12px;
-    }
-
-    /* =========================
-       VISION
-    ========================= */
-
-    .vision-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .vision-card {
-      padding: 24px;
-    }
-
-    .vision-card.large {
-      grid-column: span 2;
-    }
-
-    .vision-card h3 {
-      margin-top: 7px;
-      font-size: 20px;
-      letter-spacing: -.025em;
-    }
-
-    .vision-card p {
-      margin-top: 12px;
-      color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .vision-list {
-      margin-top: 14px;
-      padding-left: 18px;
-      color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.8;
-    }
-
-    .future-woman {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-    }
-
-    .future-woman .eyebrow,
-    .future-woman p,
-    .future-woman .vision-list {
-      color: rgba(255,255,255,.7);
-    }
-
-    /* =========================
-       PURPOSE
-    ========================= */
-
-    .purpose-layout {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 18px;
-    }
-
-    .purpose-main {
-      padding: 30px;
-    }
-
-    .purpose-main h2 {
-      margin-top: 8px;
-      font-size: 25px;
-      letter-spacing: -.035em;
-    }
-
-    .purpose-main p {
-      margin-top: 15px;
-      font-size: 14px;
-      color: var(--text-soft);
-      line-height: 1.75;
-    }
-
-    .purpose-side {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .purpose-quote {
-      padding: 21px;
-      height: 100%;
-    }
-
-    .purpose-quote blockquote {
-      margin-top: 8px;
-      font-size: 18px;
-      line-height: 1.45;
-      letter-spacing: -.02em;
-    }
-
-    .purpose-quote small {
-      display: block;
-      margin-top: 12px;
-      color: var(--text-soft);
-      font-size: 11px;
-    }
-
-    /* =========================
-       LIFE AREAS
-    ========================= */
-
-    .areas-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .area-card {
-      padding: 20px;
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .area-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .area-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: var(--surface-soft);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-    }
-
-    .area-card h3 {
-      margin-top: 15px;
-      font-size: 17px;
-      letter-spacing: -.02em;
-    }
-
-    .area-card .meaning {
-      margin-top: 5px;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .area-state {
-      margin-top: auto;
-      padding-top: 15px;
-    }
-
-    .state-label {
-      font-size: 9px;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: .08em;
-      color: var(--text-soft);
-    }
-
-    .state-text {
-      margin-top: 4px;
-      font-size: 11px;
-      line-height: 1.5;
-    }
-
-    /* =========================
-       GOALS
-    ========================= */
-
-    .goal-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .goal-card {
-      padding: 20px;
-    }
-
-    .goal-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-    }
-
-    .goal-title {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -.02em;
-    }
-
-    .goal-description {
-      margin-top: 5px;
-      font-size: 12px;
-      color: var(--text-soft);
-      max-width: 800px;
-    }
-
-    .goal-meta {
-      margin-top: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-
-    .goal-bottom {
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .goal-bottom .progress {
-      flex: 1;
-    }
-
-    .goal-percent {
-      font-size: 11px;
-      font-weight: 700;
-      min-width: 35px;
-      text-align: right;
-    }
-
-    /* =========================
-       PROJECTS
-    ========================= */
-
-    .project-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-    }
-
-    .project-card {
-      padding: 21px;
-    }
-
-    .project-title {
-      margin-top: 8px;
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .project-description {
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--text-soft);
-      line-height: 1.55;
-    }
-
-    .project-next {
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .project-next-item {
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-      font-size: 11px;
-    }
-
-    .project-next-item::before {
-      content: "→";
-      color: var(--text-soft);
-    }
-
-    /* =========================
-       ROUTINES
-    ========================= */
-
-    .routine-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .routine-card {
-      padding: 17px;
-      display: flex;
-      align-items: center;
-      gap: 13px;
-    }
-
-    .routine-check {
-      width: 24px;
-      height: 24px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--surface-soft);
-      flex-shrink: 0;
-    }
-
-    .routine-info {
-      flex: 1;
-    }
-
-    .routine-name {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .routine-details {
-      margin-top: 2px;
-      font-size: 10px;
-      color: var(--text-soft);
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 1100px) {
-      .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .dashboard-columns,
-      .purpose-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .areas-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 800px) {
-      .sidebar {
-        width: 100%;
-        height: auto;
-        min-height: 0;
-        position: fixed;
-        bottom: 0;
-        top: auto;
-        left: 0;
-        border-right: 0;
-        border-top: 1px solid var(--border);
-        padding: 7px;
-      }
-
-      .brand,
-      .sidebar-bottom,
-      .nav-section {
-        display: none;
-      }
-
-      .nav {
-        flex-direction: row;
-        justify-content: space-around;
-      }
-
-      .nav-button {
-        width: auto;
-        padding: 8px;
-        justify-content: center;
-      }
-
-      .nav-button span:last-child {
-        display: none;
-      }
-
-      .main {
-        width: 100%;
-        margin-left: 0;
-        padding-bottom: 70px;
-      }
-
-      .topbar {
-        padding: 0 18px;
-      }
-
-      .content {
-        padding: 24px 18px 50px;
-      }
-
-      .section-header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .dashboard-grid,
-      .areas-grid,
-      .project-grid,
-      .routine-grid,
-      .vision-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .vision-card.large {
-        grid-column: auto;
-      }
-
-      .hero h1 {
-        font-size: 26px;
-      }
-
-      .priority-item {
-        grid-template-columns: 30px 1fr;
-      }
-
-      .priority-progress {
-        grid-column: 2;
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F7F5F0">
+<title>Meu Sistema Operacional</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --bg:#f7f5f0; --surface:#ffffff; --surface-soft:#f1eee7; --text:#252525; --text-soft:#73706a;
+  --border:#dedbd3; --accent:#252525; --accent-soft:#e8e4dc;
+  --green:#687c68; --green-soft:#e4ebe2;
+  --yellow:#a98b4d; --yellow-soft:#f3ecd9;
+  --red:#9b625c; --red-soft:#f1e3e0;
+  --blue:#64798a; --blue-soft:#e4ebef;
+  --radius:18px; --radius-small:11px;
+  --shadow:0 2px 12px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+
+.app{min-height:100vh;display:flex}
+.sidebar{width:250px;min-height:100vh;position:fixed;left:0;top:0;background:var(--surface);border-right:1px solid var(--border);padding:28px 18px;display:flex;flex-direction:column;z-index:30}
+.brand-title{font-size:20px;font-weight:700;letter-spacing:-.03em}
+.brand-subtitle{margin-top:3px;font-size:12px;color:var(--text-soft)}
+.nav{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.nav-button{width:100%;border:0;background:transparent;border-radius:11px;padding:10px 11px;display:flex;align-items:center;gap:10px;text-align:left;color:var(--text-soft);transition:.15s ease}
+.nav-button:hover{background:var(--surface-soft);color:var(--text)}
+.nav-button.active{background:var(--accent);color:#fff}
+.nav-icon{width:20px;text-align:center;font-size:15px}
+.sidebar-bottom{margin-top:auto;padding:14px 10px 0;border-top:1px solid var(--border)}
+.sidebar-quote{font-size:11px;line-height:1.55;color:var(--text-soft);font-style:italic}
+
+.main{width:calc(100% - 250px);margin-left:250px;min-height:100vh}
+.topbar{height:72px;background:rgba(247,245,240,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 36px;position:sticky;top:0;z-index:10}
+.page-title{font-size:19px;font-weight:700;letter-spacing:-.025em}
+.page-date{font-size:12px;color:var(--text-soft)}
+.content{max-width:1300px;margin:0 auto;padding:34px 36px 90px}
+
+.page{display:none}
+.page.active{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+
+.section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.section-header h1{font-size:28px;letter-spacing:-.04em;line-height:1.1}
+.section-header p{margin-top:7px;max-width:650px;color:var(--text-soft);font-size:13px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-padding{padding:22px}
+.eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-soft)}
+.muted{color:var(--text-soft)}
+.small{font-size:12px}
+
+.button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;transition:.15s ease}
+.button:hover{border-color:#bbb7ae;background:var(--surface-soft)}
+.button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.button.primary:hover{opacity:.88}
+.button.danger{color:var(--red);border-color:var(--red-soft)}
+.button.danger:hover{background:var(--red-soft)}
+.button.small{padding:6px 10px;font-size:11px}
+.button.icon{padding:6px 9px}
+
+.tag{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:700;background:var(--accent-soft);color:var(--text)}
+.tag.green{background:var(--green-soft);color:var(--green)}
+.tag.yellow{background:var(--yellow-soft);color:var(--yellow)}
+.tag.red{background:var(--red-soft);color:var(--red)}
+.tag.blue{background:var(--blue-soft);color:var(--blue)}
+
+.progress{width:100%;height:6px;background:var(--surface-soft);border-radius:999px;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);border-radius:inherit;transition:width .3s ease}
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* dashboard */
+.hero{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-100px;top:-130px;background:var(--surface-soft)}
+.hero-content{position:relative;z-index:1;max-width:760px}
+.hero h1{margin-top:6px;font-size:28px;line-height:1.15;letter-spacing:-.04em}
+.hero p{margin-top:10px;color:var(--text-soft);font-size:13px}
+.quote-card{margin-top:16px;padding:12px 15px;background:var(--surface-soft);border-radius:12px;font-size:12px;font-style:italic;max-width:600px}
+
+.dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.metric-card{padding:18px}
+.metric-label{font-size:11px;color:var(--text-soft)}
+.metric-value{margin-top:6px;font-size:24px;font-weight:750;letter-spacing:-.03em}
+.metric-description{margin-top:4px;font-size:11px;color:var(--text-soft)}
+
+.dashboard-columns{display:grid;grid-template-columns:1.3fr .9fr;gap:16px}
+
+.priority-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.priority-item{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;padding:11px;border:1px solid var(--border);border-radius:13px}
+.priority-number{width:28px;height:28px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--surface-soft);font-size:12px;font-weight:700}
+.priority-title{font-size:13px;font-weight:700}
+.priority-subtitle{margin-top:2px;font-size:11px;color:var(--text-soft)}
+.priority-progress{width:90px}
+
+.today-list{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.today-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:11px;background:var(--surface-soft);cursor:pointer;user-select:none}
+.today-item:hover{background:var(--accent-soft)}
+.check{width:18px;height:18px;border:1px solid #bdb9b0;border-radius:50%;flex-shrink:0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px}
+.check.done{background:var(--green);border-color:var(--green);color:#fff}
+.today-item span{font-size:12px}
+.today-item.done span{text-decoration:line-through;color:var(--text-soft)}
+.empty-note{font-size:12px;color:var(--text-soft);padding:10px 0}
+
+/* areas */
+.areas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.area-card{padding:20px;min-height:170px;display:flex;flex-direction:column}
+.area-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.area-icon{width:34px;height:34px;border-radius:10px;background:var(--surface-soft);display:flex;align-items:center;justify-content:center;font-size:16px}
+.area-card h3{margin-top:13px;font-size:16px;letter-spacing:-.02em}
+.area-card .meaning{margin-top:5px;font-size:11px;color:var(--text-soft)}
+.area-state{margin-top:auto;padding-top:13px;display:flex;gap:10px;font-size:11px;color:var(--text-soft)}
+
+/* vision */
+.vision-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vision-card{padding:22px}
+.vision-card.large{grid-column:span 2}
+.vision-card h3{margin-top:7px;font-size:19px;letter-spacing:-.025em}
+.vision-card p{margin-top:10px;color:var(--text-soft);font-size:13px;line-height:1.7}
+.vision-list{margin-top:12px;padding-left:18px;color:var(--text-soft);font-size:13px;line-height:1.8}
+.future-woman{background:var(--accent);color:#fff;border-color:var(--accent)}
+.future-woman .eyebrow,.future-woman p,.future-woman .vision-list{color:rgba(255,255,255,.72)}
+
+/* goal / project cards */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.select-filter{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:8px 10px;font-size:12px}
+
+.goal-list,.project-list{display:flex;flex-direction:column;gap:12px}
+.goal-card{padding:20px}
+.goal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.goal-title{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.goal-description{margin-top:5px;font-size:12px;color:var(--text-soft);max-width:800px}
+.goal-meta{margin-top:13px;display:flex;flex-wrap:wrap;gap:7px}
+.goal-bottom{margin-top:14px;display:flex;align-items:center;gap:14px}
+.goal-bottom .progress{flex:1}
+.goal-percent{font-size:11px;font-weight:700;min-width:35px;text-align:right}
+.goal-actions{display:flex;gap:6px;flex-shrink:0}
+.goal-history{margin-top:12px;font-size:11px;color:var(--text-soft)}
+
+.project-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.project-card{padding:20px;display:flex;flex-direction:column}
+.project-title{margin-top:8px;font-size:15px;font-weight:700}
+.project-description{margin-top:6px;font-size:12px;color:var(--text-soft);line-height:1.55}
+.task-list{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.task-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.task-item input{accent-color:var(--accent)}
+.task-item.done span{text-decoration:line-through;color:var(--text-soft)}
+.task-add{display:flex;gap:6px;margin-top:10px}
+.task-add input{flex:1;border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-size:12px}
+.project-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+
+/* habits */
+.habit-list{display:flex;flex-direction:column;gap:10px}
+.habit-card{padding:16px 18px;display:flex;align-items:center;gap:14px}
+.habit-check-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surface-soft);flex-shrink:0;font-size:15px;display:flex;align-items:center;justify-content:center}
+.habit-check-btn.done{background:var(--green);border-color:var(--green);color:#fff}
+.habit-info{flex:1;min-width:0}
+.habit-name{font-size:13px;font-weight:700}
+.habit-details{margin-top:2px;font-size:10.5px;color:var(--text-soft)}
+.habit-stats{display:flex;gap:14px;text-align:center}
+.habit-stat{min-width:52px}
+.habit-stat b{display:block;font-size:15px}
+.habit-stat span{font-size:9.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em}
+.habit-cal-toggle{cursor:pointer;text-decoration:underline;font-size:11px;color:var(--text-soft)}
+
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
+.calendar .dow{font-size:9px;text-align:center;color:var(--text-soft);font-weight:700;text-transform:uppercase}
+.calendar .day{aspect-ratio:1;border-radius:8px;background:var(--surface-soft);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-soft);cursor:pointer;border:1px solid transparent}
+.calendar .day.done{background:var(--green-soft);color:var(--green);font-weight:700;border-color:var(--green)}
+.calendar .day.empty{background:transparent;cursor:default}
+.calendar .day.future{opacity:.35;cursor:default}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.cal-nav b{font-size:12px}
+
+/* reviews */
+.review-form{display:flex;flex-direction:column;gap:14px}
+.review-q label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.review-q textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px;font-size:12.5px;resize:vertical;min-height:56px;background:var(--surface)}
+.review-history-item{padding:14px 0;border-top:1px solid var(--border)}
+.review-history-item:first-child{border-top:0}
+.review-history-item .rdate{font-size:11px;color:var(--text-soft);font-weight:700}
+.review-history-item .rq{font-size:11.5px;font-weight:600;margin-top:8px}
+.review-history-item .ra{font-size:12px;color:var(--text-soft);margin-top:2px;white-space:pre-wrap}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(20,18,15,.4);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 20px;overflow:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px;width:100%;max-width:520px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h2{font-size:17px;letter-spacing:-.02em;margin-bottom:16px}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--text-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:9px 11px;font-size:13px;background:var(--surface)}
+.field textarea{min-height:70px;resize:vertical}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+
+.empty-state{padding:40px 20px;text-align:center;color:var(--text-soft);font-size:13px}
+.fin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.fin-item{padding:14px;border:1px solid var(--border);border-radius:13px}
+.fin-item .fl{font-size:10.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em}
+.fin-item .fv{font-size:18px;font-weight:750;margin-top:5px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:10px 18px;border-radius:12px;font-size:12px;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.toast.show{opacity:1}
+
+.auth-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;box-shadow:var(--shadow)}
+.auth-card h1{font-size:20px;letter-spacing:-.03em;margin-bottom:6px}
+.auth-card p{font-size:12.5px;color:var(--text-soft);margin-bottom:20px;line-height:1.6}
+.auth-card input{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;background:var(--surface)}
+.auth-msg{font-size:12px;margin-top:12px;color:var(--text-soft)}
+.auth-msg.success{color:var(--green)}
+.auth-msg.error{color:var(--red)}
+.sync-status{font-size:10.5px;color:var(--text-soft);display:flex;align-items:center;gap:6px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.sync-dot.saving{background:var(--yellow)}
+.sync-dot.error{background:var(--red)}
+.user-bar{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:10.5px;color:var(--text-soft);display:flex;flex-direction:column;gap:6px}
+.user-bar .email{font-weight:700;color:var(--text);word-break:break-all}
+.logout-link{background:none;border:none;color:var(--text-soft);text-decoration:underline;font-size:10.5px;cursor:pointer;padding:0;text-align:left}
+
+@media (max-width:1100px){
+  .dashboard-grid{grid-template-columns:repeat(2,1fr)}
+  .dashboard-columns,.vision-grid,.project-grid{grid-template-columns:1fr}
+  .areas-grid{grid-template-columns:repeat(2,1fr)}
+  .fin-grid{grid-template-columns:1fr}
+}
+@media (max-width:800px){
+  .sidebar{width:100%;height:auto;min-height:0;position:fixed;bottom:0;top:auto;left:0;border-right:0;border-top:1px solid var(--border);padding:7px}
+  .brand,.sidebar-bottom{display:none}
+  .nav{flex-direction:row;justify-content:space-around;overflow-x:auto}
+  .nav-button{width:auto;padding:8px;justify-content:center}
+  .nav-button span:last-child{display:none}
+  .main{width:100%;margin-left:0;padding-bottom:74px}
+  .topbar{padding:0 18px}
+  .content{padding:22px 16px 50px}
+  .dashboard-grid,.areas-grid,.project-grid,.vision-grid{grid-template-columns:1fr}
+  .vision-card.large{grid-column:auto}
+  .hero h1{font-size:23px}
+  .field-row{grid-template-columns:1fr}
+}
+</style>
 </head>
-
 <body>
 
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <h1>Meu Sistema</h1>
+    <p>Entre com seu e-mail para sincronizar seus dados entre dispositivos. Você vai receber um link mágico — sem senha.</p>
+    <input type="email" id="authEmail" placeholder="seu@email.com" autocomplete="email">
+    <button class="button primary" style="width:100%" onclick="sendMagicLink()">Enviar link mágico</button>
+    <div class="auth-msg" id="authMsg"></div>
+  </div>
+</div>
+
 <div class="app">
-
-  <!-- =========================
-       SIDEBAR
-  ========================= -->
-
   <aside class="sidebar">
-
     <div class="brand">
       <div class="brand-title">Meu Sistema</div>
       <div class="brand-subtitle">Sistema Operacional Pessoal</div>
     </div>
-
     <nav class="nav">
-
-      <div class="nav-section">Principal</div>
-
-      <button class="nav-button active" onclick="showPage('dashboard', this)">
-        <span class="nav-icon">⌂</span>
-        <span>Agora</span>
-      </button>
-
-      <button class="nav-button" onclick="showPage('vision', this)">
-        <span class="nav-icon">◌</span>
-        <span>Visão</span>
-      </button>
-
-      <button class="nav-button" onclick="showPage('purpose', this)">
-        <span class="nav-icon">✦</span>
-        <span>Propósito</span>
-      </button>
-
-      <div class="nav-section">Construção</div>
-
-      <button class="nav-button" onclick="showPage('areas', this)">
-        <span class="nav-icon">◫</span>
-        <span>Áreas da vida</span>
-      </button>
-
-      <button class="nav-button" onclick="showPage('goals', this)">
-        <span class="nav-icon">◎</span>
-        <span>Objetivos</span>
-      </button>
-
-      <button class="nav-button" onclick="showPage('projects', this)">
-        <span class="nav-icon">◇</span>
-        <span>Projetos</span>
-      </button>
-
-      <button class="nav-button" onclick="showPage('routines', this)">
-        <span class="nav-icon">✓</span>
-        <span>Hábitos & Rotinas</span>
-      </button>
-
-      <div class="nav-section">Acompanhamento</div>
-
-      <button class="nav-button" onclick="showPage('reviews', this)">
-        <span class="nav-icon">↻</span>
-        <span>Revisões</span>
-      </button>
-
-      <button class="nav-button" onclick="showPage('decisions', this)">
-        <span class="nav-icon">◇</span>
-        <span>Decisões</span>
-      </button>
-
+      <button class="nav-button active" data-page="dashboard"><span class="nav-icon">⌂</span><span>Agora</span></button>
+      <button class="nav-button" data-page="vision"><span class="nav-icon">◌</span><span>Visão</span></button>
+      <button class="nav-button" data-page="areas"><span class="nav-icon">◫</span><span>Áreas</span></button>
+      <button class="nav-button" data-page="goals"><span class="nav-icon">◎</span><span>Metas</span></button>
+      <button class="nav-button" data-page="projects"><span class="nav-icon">◇</span><span>Projetos</span></button>
+      <button class="nav-button" data-page="habits"><span class="nav-icon">✓</span><span>Hábitos</span></button>
+      <button class="nav-button" data-page="reviews"><span class="nav-icon">↻</span><span>Revisões</span></button>
+      <button class="nav-button" data-page="decisions"><span class="nav-icon">§</span><span>Decisões</span></button>
     </nav>
-
     <div class="sidebar-bottom">
-      <div class="sidebar-quote">
-        “Pequenas melhorias, todos os dias.”
+      <div class="sidebar-quote">"Pequenas melhorias, todos os dias."</div>
+      <div class="user-bar">
+        <div class="sync-status"><span class="sync-dot" id="syncDot"></span><span id="syncLabel">Sincronizado</span></div>
+        <div class="email" id="userEmail"></div>
+        <button class="logout-link" onclick="logout()">Sair</button>
       </div>
     </div>
-
   </aside>
 
-
-  <!-- =========================
-       MAIN
-  ========================= -->
-
   <main class="main">
-
     <header class="topbar">
-      <div>
-        <div class="page-title" id="pageTitle">Agora</div>
-      </div>
-
+      <div class="page-title" id="pageTitle">Agora</div>
       <div class="page-date" id="currentDate"></div>
     </header>
 
-
     <div class="content">
 
-      <!-- =========================
-           DASHBOARD / AGORA
-      ========================= -->
-
       <section class="page active" id="page-dashboard">
-
         <div class="hero">
-
           <div class="hero-content">
-
             <div class="eyebrow">Sistema Operacional Pessoal</div>
-
-            <h1>
-              A vida que você está construindo.
-            </h1>
-
-            <p>
-              O sistema não existe para controlar sua vida.
-              Ele existe para manter visível a direção que você escolheu,
-              transformar intenção em execução e mostrar sua evolução ao longo do tempo.
-            </p>
-
-            <div class="quote-card">
-              O importante não é chegar amanhã.
-              É continuar se direcionando para a vida que quero construir.
-            </div>
-
+            <h1>A vida que você está construindo.</h1>
+            <p>O sistema não existe para controlar sua vida. Ele existe para manter visível a direção que você escolheu, transformar intenção em execução e mostrar sua evolução ao longo do tempo.</p>
+            <div class="quote-card">O importante não é chegar amanhã. É continuar se direcionando para a vida que quero construir.</div>
           </div>
-
         </div>
 
-
-        <div class="dashboard-grid">
-
-          <div class="card metric-card">
-            <div class="metric-label">Prioridade 2026</div>
-            <div class="metric-value">Saúde</div>
-            <div class="metric-description">
-              Reconstruir uma rotina sustentável.
-            </div>
-          </div>
-
-          <div class="card metric-card">
-            <div class="metric-label">Prioridade 2026</div>
-            <div class="metric-value">Espanhol</div>
-            <div class="metric-description">
-              Desenvolver competência profissional.
-            </div>
-          </div>
-
-          <div class="card metric-card">
-            <div class="metric-label">Compromisso</div>
-            <div class="metric-value">MBA</div>
-            <div class="metric-description">
-              Manter evolução e concluir as entregas.
-            </div>
-          </div>
-
-          <div class="card metric-card">
-            <div class="metric-label">Reserva financeira</div>
-            <div class="metric-value">R$ 33k</div>
-            <div class="metric-description">
-              Segurança e liberdade financeira.
-            </div>
-          </div>
-
-        </div>
-
+        <div class="dashboard-grid" id="dashMetrics"></div>
 
         <div class="dashboard-columns">
-
           <div class="card card-padding">
-
-            <div class="eyebrow">Focos do ciclo</div>
-
-            <div class="priority-list">
-
-              <div class="priority-item">
-
-                <div class="priority-number">01</div>
-
-                <div>
-                  <div class="priority-title">Saúde</div>
-                  <div class="priority-subtitle">
-                    Alimentação, atividade física, sono e rotina.
-                  </div>
-                </div>
-
-                <div class="priority-progress">
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 0%"></div>
-                  </div>
-                </div>
-
-              </div>
-
-
-              <div class="priority-item">
-
-                <div class="priority-number">02</div>
-
-                <div>
-                  <div class="priority-title">Espanhol</div>
-                  <div class="priority-subtitle">
-                    Preparação para demandas profissionais de 2026.
-                  </div>
-                </div>
-
-                <div class="priority-progress">
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 0%"></div>
-                  </div>
-                </div>
-
-              </div>
-
-
-              <div class="priority-item">
-
-                <div class="priority-number">03</div>
-
-                <div>
-                  <div class="priority-title">MBA</div>
-                  <div class="priority-subtitle">
-                    Acompanhar aulas, provas e entregas.
-                  </div>
-                </div>
-
-                <div class="priority-progress">
-                  <div class="progress">
-                    <div class="progress-bar" style="width: 0%"></div>
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
+            <div class="eyebrow">Metas em foco</div>
+            <div class="priority-list" id="dashPriorities"></div>
           </div>
-
-
           <div class="card card-padding">
-
-            <div class="eyebrow">Hoje</div>
-
-            <div class="today-list">
-
-              <div class="today-item">
-                <div class="check"></div>
-                <span>Treino / movimento</span>
-              </div>
-
-              <div class="today-item">
-                <div class="check"></div>
-                <span>Estudo de espanhol</span>
-              </div>
-
-              <div class="today-item">
-                <div class="check"></div>
-                <span>15 min de organização</span>
-              </div>
-
-              <div class="today-item">
-                <div class="check"></div>
-                <span>Prioridade principal do dia</span>
-              </div>
-
-            </div>
-
+            <div class="eyebrow">Hábitos de hoje</div>
+            <div class="today-list" id="dashHabits"></div>
           </div>
-
         </div>
 
+        <div class="card card-padding" style="margin-top:16px">
+          <div class="eyebrow">Resumo financeiro</div>
+          <div class="fin-grid" id="dashFinance"></div>
+        </div>
       </section>
 
-
-      <!-- =========================
-           VISÃO
-      ========================= -->
-
       <section class="page" id="page-vision">
-
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Direção</div>
-
             <h1>Visão de vida</h1>
-
-            <p>
-              A imagem da vida que você quer construir,
-              sem transformar o futuro em uma lista de cobranças.
-            </p>
+            <p>A imagem da vida que você quer construir, sem transformar o futuro em uma lista de cobranças.</p>
           </div>
-
         </div>
-
-
         <div class="vision-grid">
-
           <article class="card vision-card large">
-
             <div class="eyebrow">Visão geral</div>
-
-            <h3>
-              Uma vida com propósito, autonomia, saúde, liberdade,
-              experiências e impacto.
-            </h3>
-
-            <p>
-              O sucesso não é definido apenas por patrimônio, cargo ou aparência.
-              É a combinação entre referência profissional, desenvolvimento de pessoas,
-              impacto real, saúde, liberdade financeira, patrimônio, viagens,
-              relações profundas, desenvolvimento contínuo, descanso, lazer
-              e uma vida pessoal rica e significativa.
-            </p>
-
+            <h3>Uma vida com propósito, autonomia, saúde, liberdade, experiências e impacto.</h3>
+            <p>O sucesso não é definido apenas por patrimônio, cargo ou aparência. É a combinação entre referência profissional, desenvolvimento de pessoas, impacto real, saúde, liberdade financeira, patrimônio, viagens, relações profundas, desenvolvimento contínuo, descanso, lazer e uma vida pessoal rica e significativa.</p>
           </article>
-
-
           <article class="card vision-card future-woman">
-
             <div class="eyebrow">Horizonte principal</div>
-
             <h3>A mulher aos 35 anos</h3>
-
-            <p>
-              Uma mulher saudável, disposta, organizada, profissionalmente
-              reconhecida e segura de si.
-            </p>
-
+            <p>Uma mulher saudável, disposta, organizada, profissionalmente reconhecida e segura de si.</p>
             <ul class="vision-list">
               <li>É referência técnica e metodológica.</li>
               <li>É uma gestora humana, firme e estratégica.</li>
@@ -1267,2897 +349,1011 @@
               <li>Protege seus finais de semana e sua vida pessoal.</li>
               <li>Viaja, aprende e mantém hobbies.</li>
             </ul>
-
           </article>
-
-
           <article class="card vision-card">
-
-            <div class="eyebrow">Marcos de vida</div>
-
-            <h3>Como saber que está acontecendo</h3>
-
-            <ul class="vision-list">
-              <li>Ter meu carro.</li>
-              <li>Ter minha casa.</li>
-              <li>Conhecer Europa, África ou Ásia.</li>
-              <li>Ter um cargo muito bom.</li>
-              <li>Ter confiança para dirigir.</li>
-              <li>Ser saudável e transmitir saúde.</li>
-              <li>Ser fitness sem ser bitolada.</li>
-              <li>Ter um esporte no qual seja boa.</li>
-              <li>Ter grandes marcos na carreira.</li>
-              <li>Ser convidada para eventos.</li>
-              <li>Ter amizades profundas.</li>
-              <li>Ter liberdade financeira.</li>
-              <li>Ter um hobby robusto.</li>
-              <li>Desenvolver espanhol e inglês.</li>
-              <li>Desenvolver liderança e comunicação.</li>
-            </ul>
-
-          </article>
-
-
-          <article class="card vision-card">
-
-            <div class="eyebrow">Definição de sucesso</div>
-
-            <h3>Direção, não corrida</h3>
-
-            <p>
-              Não é necessário atingir todos os objetivos em uma idade específica.
-              Os objetivos de longo prazo continuam existindo enquanto o foco muda
-              de acordo com cada fase da vida.
-            </p>
-
-            <p>
-              O sistema deve mostrar direção, execução e evolução,
-              sem transformar atrasos em fracasso.
-            </p>
-
-          </article>
-
-        </div>
-
-      </section>
-
-
-      <!-- =========================
-           PROPÓSITO
-      ========================= -->
-
-      <section class="page" id="page-purpose">
-
-        <div class="section-header">
-
-          <div>
-            <div class="eyebrow">Por quê</div>
-
-            <h1>Propósito</h1>
-
-            <p>
-              O que dá significado às escolhas que aparecem no sistema.
-            </p>
-          </div>
-
-        </div>
-
-
-        <div class="purpose-layout">
-
-          <div class="card purpose-main">
-
             <div class="eyebrow">Propósito profissional</div>
-
-            <h2>
-              Melhorar a vida das pessoas através da melhoria contínua.
-            </h2>
-
-            <p>
-              O trabalho com TPM e melhoria contínua não é apenas sobre metodologia.
-              Existe uma conexão forte com o desenvolvimento das pessoas,
-              especialmente do público operacional.
-            </p>
-
-            <p>
-              A melhoria contínua pode ampliar conhecimento, abrir oportunidades
-              de carreira e permitir que pessoas que começaram como auxiliares
-              e operadores cheguem a posições de coordenação e gestão.
-            </p>
-
-            <p>
-              O impacto profissional desejado é criar condições para que essas
-              pessoas construam uma vida melhor e, consequentemente,
-              melhorem também a vida de suas famílias.
-            </p>
-
-            <div class="divider"></div>
-
-            <div class="eyebrow">Propósito pessoal</div>
-
-            <p>
-              Usar as oportunidades recebidas para construir uma vida maior,
-              sem perder de vista de onde veio e sem esquecer quem ajudou
-              a tornar essa trajetória possível.
-            </p>
-
-          </div>
-
-
-          <div class="purpose-side">
-
-            <div class="card purpose-quote">
-
-              <div class="eyebrow">Uma frase central</div>
-
-              <blockquote>
-                “Meu pai lutou para que eu tivesse uma oportunidade
-                que ele não teve.”
-              </blockquote>
-
-              <small>
-                Uma ideia central sobre origem, oportunidade e construção de futuro.
-              </small>
-
-            </div>
-
-
-            <div class="card purpose-quote">
-
-              <div class="eyebrow">Para lembrar</div>
-
-              <blockquote>
-                “Pequenas melhorias, todos os dias.”
-              </blockquote>
-
-            </div>
-
-
-            <div class="card purpose-quote">
-
-              <div class="eyebrow">Direção</div>
-
-              <blockquote>
-                “O futuro que eu quero depende das decisões que tomo hoje.”
-              </blockquote>
-
-            </div>
-
-          </div>
-
+            <h3>Melhorar a vida das pessoas</h3>
+            <p>O trabalho com TPM e melhoria contínua está conectado ao desenvolvimento das pessoas, especialmente do público operacional — ampliando conhecimento e abrindo oportunidades de carreira.</p>
+          </article>
+          <article class="card vision-card">
+            <div class="eyebrow">Para lembrar</div>
+            <h3>Direção, não corrida</h3>
+            <p>Os objetivos de longo prazo continuam existindo enquanto o foco muda de acordo com cada fase da vida. O sistema deve mostrar direção, execução e evolução, sem transformar atrasos em fracasso.</p>
+          </article>
         </div>
-
       </section>
-
-
-      <!-- =========================
-           ÁREAS DA VIDA
-      ========================= -->
 
       <section class="page" id="page-areas">
-
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Mapa da vida</div>
-
             <h1>Áreas da vida</h1>
-
-            <p>
-              As grandes dimensões que sustentam a vida que você quer construir.
-            </p>
+            <p>As grandes dimensões que sustentam a vida que você quer construir.</p>
           </div>
-
         </div>
-
-
-        <div class="areas-grid">
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">♡</div>
-              <span class="tag green">Prioridade 2026</span>
-            </div>
-
-            <h3>Saúde</h3>
-
-            <div class="meaning">
-              Base para viver plenamente e ter energia e disposição.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Hoje</div>
-
-              <div class="state-text">
-                Rotina em reconstrução, alimentação adequada quando cozinha
-                e necessidade de retomar atividade física.
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">↗</div>
-              <span class="tag">Alta</span>
-            </div>
-
-            <h3>Carreira</h3>
-
-            <div class="meaning">
-              Principal veículo de impacto, desenvolvimento e geração de recursos.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Hoje</div>
-
-              <div class="state-text">
-                Analista Sênior de Governança e TPM LATAM,
-                com escopo próximo de coordenação.
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">◇</div>
-              <span class="tag">Alta</span>
-            </div>
-
-            <h3>Finanças e Patrimônio</h3>
-
-            <div class="meaning">
-              Segurança, liberdade e meios para construir a vida desejada.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Hoje</div>
-
-              <div class="state-text">
-                Aproximadamente R$ 33 mil de reserva e independência financeira.
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">✦</div>
-              <span class="tag blue">Contínuo</span>
-            </div>
-
-            <h3>Desenvolvimento</h3>
-
-            <div class="meaning">
-              Construção contínua das capacidades que sustentam a vida.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Hoje</div>
-
-              <div class="state-text">
-                MBA em andamento, espanhol em desenvolvimento
-                e inglês intermediário.
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">♡</div>
-              <span class="tag">Média-alta</span>
-            </div>
-
-            <h3>Relacionamentos</h3>
-
-            <div class="meaning">
-              Relações profundas, presença familiar e rede de apoio.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Hoje</div>
-
-              <div class="state-text">
-                Bons vínculos familiares e afetivos, mas poucas amizades profundas.
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">◌</div>
-              <span class="tag yellow">Média</span>
-            </div>
-
-            <h3>Experiências e Lazer</h3>
-
-            <div class="meaning">
-              Descanso, expansão cultural e contato com o mundo.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Direção</div>
-
-              <div class="state-text">
-                Viajar pelo menos uma vez por ano, conhecer novos países
-                e desenvolver um hobby elaborado.
-              </div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card area-card">
-
-            <div class="area-top">
-              <div class="area-icon">⌂</div>
-              <span class="tag">Média-alta</span>
-            </div>
-
-            <h3>Organização e Vida Pessoal</h3>
-
-            <div class="meaning">
-              Criar uma rotina que facilite a vida e preserve tempo pessoal.
-            </div>
-
-            <div class="area-state">
-
-              <div class="state-label">Hoje</div>
-
-              <div class="state-text">
-                Boa capacidade de planejamento, mas dificuldade de manter
-                consistência e organização durante a semana.
-              </div>
-
-            </div>
-
-          </article>
-
-        </div>
-
+        <div class="areas-grid" id="areasGrid"></div>
       </section>
-
-
-      <!-- =========================
-           OBJETIVOS
-      ========================= -->
 
       <section class="page" id="page-goals">
-
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Direção estratégica</div>
-
-            <h1>Objetivos</h1>
-
-            <p>
-              Objetivos de longo prazo permanecem visíveis.
-              O foco muda conforme cada ciclo.
-            </p>
+            <h1>Metas</h1>
+            <p>Objetivos de longo prazo permanecem visíveis. O foco muda conforme cada ciclo.</p>
           </div>
-
+          <button class="button primary" onclick="openGoalModal()">+ Nova meta</button>
         </div>
-
-
-        <div class="goal-list">
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Construir um estilo de vida saudável e sustentável
-                </div>
-
-                <div class="goal-description">
-                  Ter saúde física e mental, energia, atividade física,
-                  alimentação equilibrada e uma relação sustentável com o corpo.
-                </div>
-              </div>
-
-              <span class="tag green">Saúde</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag">Alta prioridade</span>
-              <span class="tag">Contínuo</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Desenvolver espanhol profissional
-                </div>
-
-                <div class="goal-description">
-                  Tornar o espanhol uma competência profissional suficiente
-                  para conversas, treinamentos e assessments.
-                </div>
-              </div>
-
-              <span class="tag blue">Desenvolvimento</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag green">Prioridade 2026</span>
-              <span class="tag yellow">Novembro 2026</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Tornar-se referência em TPM e Melhoria Contínua
-                </div>
-
-                <div class="goal-description">
-                  Construir autoridade técnica, metodológica e de desenvolvimento
-                  de pessoas, ampliando reconhecimento dentro e fora da empresa.
-                </div>
-              </div>
-
-              <span class="tag">Carreira</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag">Alta prioridade</span>
-              <span class="tag">Longo prazo</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Chegar à gestão
-                </div>
-
-                <div class="goal-description">
-                  Evoluir para coordenação e posteriormente gestão,
-                  desenvolvendo liderança humana, firme e estratégica.
-                </div>
-              </div>
-
-              <span class="tag">Carreira</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag">Alta prioridade</span>
-              <span class="tag">Horizonte: 35 anos</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Construir liberdade financeira e patrimônio
-                </div>
-
-                <div class="goal-description">
-                  Manter segurança financeira e construir carro e casa
-                  sem comprometer a estabilidade.
-                </div>
-              </div>
-
-              <span class="tag">Finanças</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag">Alta prioridade</span>
-              <span class="tag">Sem prazo rígido</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Construir amizades profundas
-                </div>
-
-                <div class="goal-description">
-                  Desenvolver amizades verdadeiras, presentes e duradouras
-                  fora do ambiente profissional.
-                </div>
-              </div>
-
-              <span class="tag">Relacionamentos</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag yellow">Média</span>
-              <span class="tag">Contínuo</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
-          <article class="card goal-card">
-
-            <div class="goal-header">
-
-              <div>
-                <div class="goal-title">
-                  Construir uma vida rica em experiências
-                </div>
-
-                <div class="goal-description">
-                  Viajar, conhecer novos países e desenvolver um hobby
-                  que tenha significado pessoal.
-                </div>
-              </div>
-
-              <span class="tag">Experiências</span>
-
-            </div>
-
-            <div class="goal-meta">
-              <span class="tag yellow">Média</span>
-              <span class="tag">Contínuo</span>
-            </div>
-
-            <div class="goal-bottom">
-
-              <div class="progress">
-                <div class="progress-bar" style="width: 0%"></div>
-              </div>
-
-              <div class="goal-percent">0%</div>
-
-            </div>
-
-          </article>
-
-
+        <div class="toolbar">
+          <select class="select-filter" id="goalAreaFilter" onchange="renderGoals()"><option value="">Todas as áreas</option></select>
+          <select class="select-filter" id="goalStatusFilter" onchange="renderGoals()">
+            <option value="active">Ativas</option>
+            <option value="archived">Arquivadas</option>
+            <option value="">Todas</option>
+          </select>
         </div>
-
+        <div class="goal-list" id="goalList"></div>
       </section>
-
-
-      <!-- =========================
-           PROJETOS
-      ========================= -->
 
       <section class="page" id="page-projects">
-
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Execução</div>
-
             <h1>Projetos</h1>
-
-            <p>
-              Projetos transformam objetivos abstratos em coisas que podem
-              efetivamente ser executadas.
-            </p>
+            <p>Projetos transformam metas abstratas em coisas que podem ser executadas.</p>
           </div>
-
+          <button class="button primary" onclick="openProjectModal()">+ Novo projeto</button>
         </div>
-
-
-        <div class="project-grid">
-
-          <article class="card project-card">
-
-            <span class="tag green">Saúde</span>
-
-            <div class="project-title">Retorno à Academia</div>
-
-            <div class="project-description">
-              Reconstruir a rotina de treinos após a interrupção.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Voltar à academia</div>
-              <div class="project-next-item">
-                Manter aproximadamente 3 treinos por semana
-              </div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag green">Saúde</span>
-
-            <div class="project-title">Reeducação Alimentar</div>
-
-            <div class="project-description">
-              Reduzir a dependência de iFood e alimentos hiperpalatáveis.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Planejar refeições</div>
-              <div class="project-next-item">Reduzir pedidos de iFood</div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag green">Saúde</span>
-
-            <div class="project-title">Descobrir um esporte</div>
-
-            <div class="project-description">
-              Encontrar uma modalidade que seja prazerosa e permita desenvolver habilidade.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Testar modalidades</div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag blue">Carreira</span>
-
-            <div class="project-title">Concluir MBA</div>
-
-            <div class="project-description">
-              Concluir a pós-graduação em andamento.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Acompanhar aulas</div>
-              <div class="project-next-item">Realizar provas</div>
-              <div class="project-next-item">Entregar atividades nos prazos</div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag blue">Carreira</span>
-
-            <div class="project-title">Palestra Instituto Butantan</div>
-
-            <div class="project-description">
-              Realizar a primeira palestra externa sobre TPM.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Preparar apresentação</div>
-              <div class="project-next-item">Ensaiar</div>
-              <div class="project-next-item">Realizar palestra</div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag">Finanças</span>
-
-            <div class="project-title">Comprar primeiro carro</div>
-
-            <div class="project-description">
-              Comprar o primeiro carro sem comprometer a estabilidade financeira.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Definir modelo</div>
-              <div class="project-next-item">Definir orçamento</div>
-              <div class="project-next-item">Criar fundo</div>
-              <div class="project-next-item">
-                Desenvolver confiança para dirigir
-              </div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag blue">Desenvolvimento</span>
-
-            <div class="project-title">
-              Intercâmbio de espanhol na Espanha
-            </div>
-
-            <div class="project-description">
-              Fazer aproximadamente 15 dias de aulas de espanhol na Espanha.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">Planejar financeiramente</div>
-              <div class="project-next-item">Escolher escola</div>
-              <div class="project-next-item">Organizar viagem</div>
-            </div>
-
-          </article>
-
-
-          <article class="card project-card">
-
-            <span class="tag">Finanças</span>
-
-            <div class="project-title">Comprar casa</div>
-
-            <div class="project-description">
-              Construir patrimônio por meio da aquisição de uma casa.
-            </div>
-
-            <div class="project-next">
-              <div class="project-next-item">
-                Próximos passos ainda não definidos
-              </div>
-            </div>
-
-          </article>
-
-        </div>
-
+        <div class="project-grid" id="projectList"></div>
       </section>
 
-
-      <!-- =========================
-           ROTINAS
-      ========================= -->
-
-      <section class="page" id="page-routines">
-
+      <section class="page" id="page-habits">
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Execução diária</div>
-
             <h1>Hábitos & Rotinas</h1>
-
-            <p>
-              Pequenas ações recorrentes que sustentam os objetivos maiores.
-            </p>
+            <p>Pequenas ações recorrentes que sustentam os objetivos maiores.</p>
           </div>
-
+          <button class="button primary" onclick="openHabitModal()">+ Novo hábito</button>
         </div>
-
-
-        <div class="routine-grid">
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Academia</div>
-              <div class="routine-details">
-                3x por semana · Saúde
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Caminhada / passos</div>
-              <div class="routine-details">
-                Diária · Meta discutida: 8–10 mil passos
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Água</div>
-              <div class="routine-details">
-                Diária · Meta: aproximadamente 2,5 L
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Sono</div>
-              <div class="routine-details">
-                Diária · Meta: aproximadamente 7h30
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Organização da casa</div>
-              <div class="routine-details">
-                Diária · Aproximadamente 15 minutos
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Espanhol</div>
-              <div class="routine-details">
-                Regular · Desenvolvimento profissional
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Estudo profissional</div>
-              <div class="routine-details">
-                Semanal · MBA + conteúdos técnicos
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="card routine-card">
-
-            <div class="routine-check"></div>
-
-            <div class="routine-info">
-              <div class="routine-name">Revisão semanal</div>
-              <div class="routine-details">
-                Domingo · Planejamento e revisão da execução
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
+        <div class="habit-list" id="habitList"></div>
       </section>
-
-
-      <!-- =========================
-           REVISÕES
-      ========================= -->
 
       <section class="page" id="page-reviews">
-
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Aprendizado</div>
-
             <h1>Revisões</h1>
-
-            <p>
-              O sistema deve permitir ajustar a rota sem transformar cada semana
-              em uma avaliação de desempenho pessoal.
-            </p>
-
+            <p>O sistema deve permitir ajustar a rota sem transformar cada semana em uma avaliação de desempenho pessoal.</p>
           </div>
-
         </div>
-
-
         <div class="dashboard-columns">
-
           <div class="card card-padding">
-
-            <div class="eyebrow">Revisão semanal</div>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              Quais são as três prioridades da semana?
-            </p>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              Qual é o maior risco da semana?
-            </p>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              Como posso facilitar minha execução?
-            </p>
-
+            <div class="eyebrow">Nova revisão</div>
+            <div style="display:flex;gap:8px;margin:14px 0">
+              <button class="button" id="btnWeekly" onclick="setReviewType('weekly')">Semanal</button>
+              <button class="button" id="btnMonthly" onclick="setReviewType('monthly')">Mensal</button>
+            </div>
+            <div class="review-form" id="reviewForm"></div>
+            <div class="modal-actions" style="margin-top:16px;justify-content:flex-start">
+              <button class="button primary" onclick="saveReview()">Salvar revisão</button>
+            </div>
           </div>
-
-
           <div class="card card-padding">
-
-            <div class="eyebrow">Revisão mensal</div>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              O que evoluiu?
-            </p>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              O que não evoluiu?
-            </p>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              O que aprendi?
-            </p>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              Do que me orgulho?
-            </p>
-
-            <div class="divider"></div>
-
-            <p class="small">
-              O que muda no próximo mês?
-            </p>
-
+            <div class="eyebrow">Histórico</div>
+            <div id="reviewHistory"></div>
           </div>
-
         </div>
-
       </section>
 
-
-      <!-- =========================
-           DECISÕES
-      ========================= -->
-
       <section class="page" id="page-decisions">
-
         <div class="section-header">
-
           <div>
             <div class="eyebrow">Princípios</div>
-
             <h1>Decisões importantes</h1>
-
-            <p>
-              Regras que ajudam o sistema a não perder a lógica original.
-            </p>
-
+            <p>Regras que ajudam o sistema a não perder a lógica original.</p>
           </div>
-
         </div>
-
-
         <div class="card card-padding">
-
-          <div class="priority-list">
-
-            <div class="priority-item">
-              <div class="priority-number">01</div>
-              <div>
-                <div class="priority-title">
-                  Não abandonar objetivos de longo prazo
-                </div>
-                <div class="priority-subtitle">
-                  Objetivos numerosos podem coexistir; o foco muda por ciclo.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">02</div>
-              <div>
-                <div class="priority-title">
-                  Não transformar todos os objetivos em prazos rígidos
-                </div>
-                <div class="priority-subtitle">
-                  Datas rígidas só quando existe uma necessidade concreta.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">03</div>
-              <div>
-                <div class="priority-title">
-                  Priorizar execução e consistência
-                </div>
-                <div class="priority-subtitle">
-                  O principal gargalo identificado é execução, não planejamento.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">04</div>
-              <div>
-                <div class="priority-title">
-                  Não transformar o sistema em um projeto
-                </div>
-                <div class="priority-subtitle">
-                  A ferramenta precisa facilitar a vida, não competir com ela.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">05</div>
-              <div>
-                <div class="priority-title">
-                  Dinheiro é meio, não fim
-                </div>
-                <div class="priority-subtitle">
-                  Segurança, liberdade, patrimônio e experiências são o objetivo.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">06</div>
-              <div>
-                <div class="priority-title">
-                  Saúde inclui descanso e saúde mental
-                </div>
-                <div class="priority-subtitle">
-                  O objetivo não é transformar a vida em uma busca obsessiva por fitness.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">07</div>
-              <div>
-                <div class="priority-title">
-                  Preservar vida pessoal
-                </div>
-                <div class="priority-subtitle">
-                  Finais de semana devem permanecer protegidos do trabalho,
-                  salvo necessidade real.
-                </div>
-              </div>
-            </div>
-
-
-            <div class="priority-item">
-              <div class="priority-number">08</div>
-              <div>
-                <div class="priority-title">
-                  Manter viva a memória do pai
-                </div>
-                <div class="priority-subtitle">
-                  Reconhecer sua influência na construção da vida atual.
-                </div>
-              </div>
-            </div>
-
-          </div>
-
+          <div class="priority-list" id="decisionsList"></div>
         </div>
-
       </section>
 
     </div>
-
   </main>
-
 </div>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+<div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================
+   SUPABASE — CONFIGURAÇÃO E AUTENTICAÇÃO
+============================================================ */
+const SUPABASE_URL = "https://mdommwhnoyozmrxbzlsw.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kb21td2hub3lvem1yeGJ6bHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYyOTQ2MDQsImV4cCI6MjEwMTg3MDYwNH0.Zt47LNWmTmY9kR-6OhUosUIAjRxYjjrWstO8UMhEdfo";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  /* =========================
-     NAVEGAÇÃO
-  ========================= */
+let currentUser = null;
 
-  const pageTitles = {
-    dashboard: "Agora",
-    vision: "Visão",
-    purpose: "Propósito",
-    areas: "Áreas da vida",
-    goals: "Objetivos",
-    projects: "Projetos",
-    routines: "Hábitos & Rotinas",
-    reviews: "Revisões",
-    decisions: "Decisões"
-  };
-
-
-  function showPage(pageName, button) {
-
-    document.querySelectorAll(".page").forEach(page => {
-      page.classList.remove("active");
-    });
-
-    const target = document.getElementById("page-" + pageName);
-
-    if (target) {
-      target.classList.add("active");
-    }
-
-    document.querySelectorAll(".nav-button").forEach(navButton => {
-      navButton.classList.remove("active");
-    });
-
-    if (button) {
-      button.classList.add("active");
-    }
-
-    document.getElementById("pageTitle").textContent =
-      pageTitles[pageName] || "Meu Sistema";
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+async function initAuth(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session && session.user){
+    await onAuthed(session.user);
+  } else {
+    document.getElementById('authOverlay').style.display = 'flex';
   }
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if(event === 'SIGNED_IN' && session && session.user){
+      await onAuthed(session.user);
+    } else if(event === 'SIGNED_OUT'){
+      currentUser = null;
+      document.getElementById('authOverlay').style.display = 'flex';
+    }
+  });
+}
 
+async function onAuthed(user){
+  currentUser = user;
+  document.getElementById('authOverlay').style.display = 'none';
+  document.getElementById('userEmail').textContent = user.email || '';
+  await loadState();
+}
 
-  /* =========================
-     DATA BASE
-  ========================= */
+async function sendMagicLink(){
+  const email = document.getElementById('authEmail').value.trim();
+  const msg = document.getElementById('authMsg');
+  if(!email){ msg.textContent = 'Digite um e-mail válido.'; msg.className='auth-msg error'; return; }
+  msg.textContent = 'Enviando...'; msg.className = 'auth-msg';
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
+  if(error){
+    msg.textContent = 'Não foi possível enviar: ' + error.message;
+    msg.className = 'auth-msg error';
+  } else {
+    msg.textContent = 'Link enviado! Verifique seu e-mail e clique no link para entrar.';
+    msg.className = 'auth-msg success';
+  }
+}
 
-  const systemData = {
+async function logout(){
+  await sb.auth.signOut();
+  state = null;
+}
 
-    year: 2026,
+/* ============================================================
+   ESTADO E PERSISTÊNCIA (Supabase — tabela app_data)
+============================================================ */
+let state = null;
+let saveTimer = null;
 
-    priorities: [
-      "Saúde",
-      "Espanhol",
-      "MBA"
+function setSyncStatus(status){
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  if(!dot) return;
+  dot.className = 'sync-dot' + (status==='saving' ? ' saving' : status==='error' ? ' error' : '');
+  label.textContent = status==='saving' ? 'Salvando...' : status==='error' ? 'Erro ao salvar' : 'Sincronizado';
+}
+
+function defaultState(){
+  return {
+    areas: [
+      {id:"saude", name:"Saúde", icon:"♡", meaning:"Base para viver plenamente e ter energia e disposição.", tag:"Prioridade 2026", tagColor:"green"},
+      {id:"carreira", name:"Carreira", icon:"↗", meaning:"Principal veículo de impacto, desenvolvimento e geração de recursos.", tag:"Alta", tagColor:""},
+      {id:"financas", name:"Finanças e Patrimônio", icon:"◇", meaning:"Segurança, liberdade e meios para construir a vida desejada.", tag:"Alta", tagColor:""},
+      {id:"desenvolvimento", name:"Desenvolvimento", icon:"✦", meaning:"Construção contínua das capacidades que sustentam a vida.", tag:"Contínuo", tagColor:"blue"},
+      {id:"relacionamentos", name:"Relacionamentos", icon:"♡", meaning:"Relações profundas, presença familiar e rede de apoio.", tag:"Média-alta", tagColor:""},
+      {id:"experiencias", name:"Experiências e Lazer", icon:"◌", meaning:"Descanso, expansão cultural e contato com o mundo.", tag:"Média", tagColor:"yellow"},
+      {id:"organizacao", name:"Organização e Vida Pessoal", icon:"⌂", meaning:"Criar uma rotina que facilite a vida e preserve tempo pessoal.", tag:"Média-alta", tagColor:""}
     ],
-
-    vision:
-      "Construir uma vida com propósito, autonomia, saúde, liberdade financeira, experiências e impacto.",
-
-    quotes: [
-      "Pequenas melhorias, todos os dias.",
-      "O futuro que eu quero depende das decisões que tomo hoje.",
-      "Meu pai lutou para que eu tivesse uma oportunidade que ele não teve.",
-      "O importante não é chegar amanhã. É continuar se direcionando para a vida que quero construir."
-    ],
-
-    financialReserve: 33000,
-
-    lifeAreas: [
-      "Saúde",
-      "Carreira",
-      "Finanças e Patrimônio",
-      "Desenvolvimento",
-      "Relacionamentos",
-      "Experiências e Lazer",
-      "Organização e Vida Pessoal"
-    ],
-
     goals: [
-      {
-        area: "Saúde",
-        name: "Construir um estilo de vida saudável e sustentável",
-        deadline: null,
-        priority: "Alta",
-        progress: 0
-      },
-      {
-        area: "Desenvolvimento",
-        name: "Desenvolver espanhol profissional",
-        deadline: "Novembro de 2026",
-        priority: "Alta",
-        progress: 0
-      },
-      {
-        area: "Carreira",
-        name: "Tornar-se referência em TPM e Melhoria Contínua",
-        deadline: null,
-        priority: "Alta",
-        progress: 0
-      },
-      {
-        area: "Carreira",
-        name: "Chegar à gestão",
-        deadline: "35 anos",
-        priority: "Alta",
-        progress: 0
-      },
-      {
-        area: "Finanças",
-        name: "Construir liberdade financeira e patrimônio",
-        deadline: null,
-        priority: "Alta",
-        progress: 0
-      },
-      {
-        area: "Relacionamentos",
-        name: "Construir amizades profundas",
-        deadline: null,
-        priority: "Média",
-        progress: 0
-      },
-      {
-        area: "Experiências",
-        name: "Construir uma vida rica em experiências",
-        deadline: null,
-        priority: "Média",
-        progress: 0
-      }
+      {id:"g1", name:"Construir um estilo de vida saudável e sustentável", description:"Ter saúde física e mental, energia, atividade física, alimentação equilibrada.", area:"saude", priority:"Alta", deadline:"", metricType:"count", unit:"treinos/semana consistentes", current:0, target:12, status:"active", history:[]},
+      {id:"g2", name:"Desenvolver espanhol profissional", description:"Tornar o espanhol uma competência profissional suficiente para conversas, treinamentos e assessments.", area:"desenvolvimento", priority:"Muito Alta", deadline:"2026-11-30", metricType:"hours", unit:"horas estudadas", current:18, target:30, status:"active", history:[]},
+      {id:"g3", name:"Concluir o MBA", description:"Manter evolução e concluir as entregas do MBA.", area:"carreira", priority:"Alta", deadline:"2026-12-31", metricType:"tasks", unit:"entregas concluídas", current:8, target:15, status:"active", history:[]},
+      {id:"g4", name:"Construir liberdade financeira e patrimônio", description:"Manter segurança financeira e construir reserva rumo ao patrimônio.", area:"financas", priority:"Alta", deadline:"", metricType:"currency", unit:"reserva", current:33000, target:60000, status:"active", history:[]},
+      {id:"g5", name:"Retomar frequência de treinos", description:"Manter regularidade de atividade física.", area:"saude", priority:"Alta", deadline:"", metricType:"frequency", unit:"treinos/mês", current:11, target:12, status:"active", history:[]}
     ],
-
     projects: [
-      "Retorno à Academia",
-      "Reeducação Alimentar",
-      "Descobrir um esporte",
-      "Concluir MBA",
-      "Palestra Instituto Butantan",
-      "Comprar primeiro carro",
-      "Intercâmbio de espanhol na Espanha",
-      "Comprar casa"
+      {id:"p1", name:"Retorno à Academia", area:"saude", goalId:"g1", description:"Reconstruir a rotina de treinos após a interrupção.", status:"Em andamento",
+        tasks:[{id:"t1",title:"Voltar à academia",done:true},{id:"t2",title:"Manter 3 treinos por semana",done:false}]},
+      {id:"p2", name:"Desenvolvimento do espanhol profissional", area:"desenvolvimento", goalId:"g2", description:"Desenvolver espanhol suficiente para atuar com Argentina e México.", status:"Em andamento",
+        tasks:[{id:"t3",title:"Fazer curso disponível",done:true},{id:"t4",title:"Praticar conversação semanal",done:false},{id:"t5",title:"Avaliar proficiência",done:false}]},
+      {id:"p3", name:"Concluir MBA", area:"carreira", goalId:"g3", description:"Concluir a pós-graduação em andamento.", status:"Em andamento",
+        tasks:[{id:"t6",title:"Acompanhar aulas",done:true},{id:"t7",title:"Realizar provas",done:true},{id:"t8",title:"Entregar atividades no prazo",done:false}]},
+      {id:"p4", name:"Comprar primeiro carro", area:"financas", goalId:"g4", description:"Comprar o primeiro carro sem comprometer a estabilidade financeira.", status:"Planejamento",
+        tasks:[{id:"t9",title:"Definir modelo",done:false},{id:"t10",title:"Definir orçamento",done:false},{id:"t11",title:"Criar fundo",done:false}]}
     ],
-
-    routines: [
-      "Academia",
-      "Caminhada / passos",
-      "Água",
-      "Sono",
-      "Organização da casa",
-      "Espanhol",
-      "Estudo profissional",
-      "Revisão semanal"
-    ]
-
-  };
-
-
-  /* =========================
-     DATA
-  ========================= */
-
-  function updateDate() {
-
-    const dateElement =
-      document.getElementById("currentDate");
-
-    const now = new Date();
-
-    const formatted = now.toLocaleDateString(
-      "pt-BR",
-      {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-      }
-    );
-
-    dateElement.textContent =
-      formatted.charAt(0).toUpperCase() +
-      formatted.slice(1);
-  }
-
-
-  updateDate();
-
-
-  /* =========================
-     PERSISTÊNCIA FUTURA
-  ========================= */
-
-  function saveSystemData() {
-
-    localStorage.setItem(
-      "meuSistemaOperacional",
-      JSON.stringify(systemData)
-    );
-
-  }
-
-
-  function loadSystemData() {
-
-    const saved =
-      localStorage.getItem("meuSistemaOperacional");
-
-    if (!saved) {
-      return;
-    }
-
-    try {
-
-      const parsed =
-        JSON.parse(saved);
-
-      Object.assign(
-        systemData,
-        parsed
-      );
-
-    } catch (error) {
-
-      console.warn(
-        "Não foi possível carregar os dados salvos.",
-        error
-      );
-
-    }
-
-  }
-
-
-  loadSystemData();
-
-
-// ============================================
-// PARTE 2/3 — OBJETIVOS, PROJETOS E ROTINAS
-// ============================================
-
-const goals = [
-  {
-    id: "goal_saude",
-    area: "Saúde",
-    name: "Construir um estilo de vida saudável e sustentável",
-    description:
-      "Ter saúde física e mental, energia, atividade física, alimentação equilibrada e uma relação sustentável com o corpo.",
-    why:
-      "A saúde sustenta todas as demais áreas da vida.",
-    deadline: null,
-    priority: "Alta",
-    indicators: [
-      "peso",
-      "treinos",
-      "dias sem iFood",
-      "sono",
-      "passos"
+    habits: [
+      {id:"h1", name:"Academia", area:"saude", frequency:3, checks:{}},
+      {id:"h2", name:"Estudo de espanhol", area:"desenvolvimento", frequency:5, checks:{}},
+      {id:"h3", name:"Água (2,5L)", area:"saude", frequency:7, checks:{}},
+      {id:"h4", name:"Organização da casa (15min)", area:"organizacao", frequency:7, checks:{}},
+      {id:"h5", name:"Sono (7h30)", area:"saude", frequency:7, checks:{}}
     ],
-    progress: null
-  },
-
-  {
-    id: "goal_espanhol",
-    area: "Desenvolvimento",
-    name: "Desenvolver espanhol profissional",
-    description:
-      "Tornar o espanhol uma competência profissional suficiente para conversas, treinamentos e assessments.",
-    why:
-      "Já é uma necessidade profissional no trabalho com Argentina e México.",
-    deadline: "2026-11",
-    priority: "Muito Alta",
-    indicators: [
-      "nível de proficiência",
-      "horas estudadas",
-      "conversação",
-      "avaliação"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_tpm",
-    area: "Carreira",
-    name: "Tornar-se referência em TPM e Melhoria Contínua",
-    description:
-      "Construir autoridade técnica, metodológica e de desenvolvimento de pessoas em TPM e melhoria contínua.",
-    why:
-      "É o principal eixo profissional e está diretamente conectado ao meu propósito.",
-    deadline: null,
-    priority: "Alta",
-    indicators: [
-      "cargo",
-      "palestras",
-      "projetos estratégicos",
-      "cursos",
-      "reconhecimento",
-      "desenvolvimento técnico"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_gestao",
-    area: "Carreira",
-    name: "Chegar à gestão",
-    description:
-      "Evoluir para coordenação e posteriormente para uma posição gerencial.",
-    why:
-      "Quero liderar e desenvolver pessoas em uma escala maior.",
-    deadline: "35 anos",
-    priority: "Alta",
-    indicators: [
-      "cargo",
-      "experiências de liderança",
-      "desenvolvimento de pessoas",
-      "feedbacks de liderança"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_comunicacao",
-    area: "Carreira",
-    name: "Desenvolver comunicação, oratória e influência",
-    description:
-      "Comunicar ideias com clareza, segurança e capacidade de influenciar e motivar pessoas.",
-    why:
-      "Quero conduzir reuniões, apresentar ideias, falar em público e transmitir segurança mesmo em situações difíceis.",
-    deadline: null,
-    priority: "Alta",
-    indicators: [
-      "palestras realizadas",
-      "apresentações",
-      "feedbacks",
-      "eventos",
-      "desenvolvimento em oratória"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_patrimonio",
-    area: "Finanças e Patrimônio",
-    name: "Construir liberdade financeira e patrimônio",
-    description:
-      "Manter segurança financeira e construir patrimônio por meio da aquisição planejada de carro e posteriormente de casa.",
-    why:
-      "Quero segurança, liberdade e patrimônio sem comprometer minha estabilidade financeira.",
-    deadline: null,
-    priority: "Alta",
-    indicators: [
-      "patrimônio líquido",
-      "reserva financeira",
-      "fundo carro",
-      "fundo casa"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_viagens",
-    area: "Experiências",
-    name: "Construir uma vida rica em experiências",
-    description:
-      "Viajar, conhecer novos países e culturas e manter espaço para lazer, descanso e expansão cultural.",
-    why:
-      "Não quero construir uma vida focada apenas em trabalho e patrimônio.",
-    deadline: null,
-    priority: "Média",
-    indicators: [
-      "viagens realizadas",
-      "países visitados",
-      "destinos fora da América Latina/México",
-      "dinheiro reservado para viagens"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_amizades",
-    area: "Relacionamentos",
-    name: "Construir amizades profundas",
-    description:
-      "Desenvolver amizades verdadeiras e duradouras fora do ambiente profissional.",
-    why:
-      "Hoje existe uma lacuna na minha vida social e quero construir uma rede de amizades mais próxima.",
-    deadline: null,
-    priority: "Média",
-    indicators: [
-      "amizades próximas",
-      "encontros",
-      "convites realizados",
-      "tempo de qualidade"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_disciplina",
-    area: "Desenvolvimento Pessoal",
-    name: "Tornar-me mais disciplinada na execução",
-    description:
-      "Desenvolver a capacidade de transformar planos em ações consistentes, principalmente nas atividades que não possuem cobrança externa.",
-    why:
-      "Meu principal gargalo identificado é execução e consistência, não planejamento.",
-    deadline: null,
-    priority: "Muito Alta",
-    indicators: [
-      "taxa de cumprimento dos hábitos",
-      "semanas consecutivas de consistência",
-      "projetos pessoais executados",
-      "frequência de abandono e reinício"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_organizacao",
-    area: "Organização e Vida Pessoal",
-    name: "Desenvolver organização pessoal e doméstica",
-    description:
-      "Construir uma rotina que permita manter a casa organizada durante a semana.",
-    why:
-      "Quero uma casa organizada e uma rotina que contribua para meu bem-estar.",
-    deadline: "2026",
-    priority: "Média-Alta",
-    indicators: [
-      "frequência de organização",
-      "dias mantendo o padrão",
-      "cumprimento da rotina doméstica"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_autocuidado",
-    area: "Saúde",
-    name: "Construir uma rotina de autocuidado",
-    description:
-      "Ter uma rotina que inclua autocuidado, atividade física, organização e tempo pessoal.",
-    why:
-      "Quero construir uma rotina sustentável que comece cedo e permita cuidar de mim antes do trabalho.",
-    deadline: null,
-    priority: "Alta",
-    indicators: [
-      "frequência da rotina",
-      "horário de acordar",
-      "autocuidado",
-      "atividade física",
-      "tempo pessoal"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_direcao",
-    area: "Direção e Autonomia",
-    name: "Desenvolver confiança para dirigir",
-    description:
-      "Desenvolver segurança e autonomia para dirigir antes da aquisição do carro.",
-    why:
-      "Quero ter autonomia para dirigir e utilizar o carro que pretendo adquirir.",
-    deadline: "Antes da compra do carro",
-    priority: "Média-Alta",
-    indicators: [
-      "aulas",
-      "prática",
-      "frequência de direção",
-      "autonomia"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_hobby",
-    area: "Hobbies e Vida Pessoal",
-    name: "Desenvolver um hobby significativo",
-    description:
-      "Encontrar e desenvolver um hobby mais elaborado, intelectualmente ou artisticamente interessante.",
-    why:
-      "Quero ter uma vida que não seja composta apenas por trabalho, saúde, dinheiro e responsabilidades.",
-    deadline: null,
-    priority: "Média",
-    indicators: [
-      "hobby escolhido",
-      "frequência de prática",
-      "nível de desenvolvimento"
-    ],
-    progress: null
-  },
-
-  {
-    id: "goal_ingles",
-    area: "Desenvolvimento",
-    name: "Retomar e desenvolver inglês",
-    description:
-      "Continuar desenvolvendo o inglês a partir do nível intermediário já existente.",
-    why:
-      "É uma competência importante para ampliar possibilidades profissionais e internacionais.",
-    deadline: null,
-    priority: "Secundária em 2026",
-    indicators: [
-      "nível de proficiência",
-      "horas estudadas",
-      "conversação"
-    ],
-    progress: null
-  }
-];
-
-
-// ============================================
-// PROJETOS
-// ============================================
-
-const projects = [
-  {
-    id: "project_academia",
-    name: "Retorno à Academia",
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    description:
-      "Reconstruir a rotina de treinos após a interrupção.",
-    deadline: "2026",
-    status: "Não iniciado",
-    nextSteps: [
-      "Voltar à academia",
-      "Manter frequência de aproximadamente 3x por semana"
-    ]
-  },
-
-  {
-    id: "project_alimentacao",
-    name: "Reeducação Alimentar",
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    description:
-      "Reduzir a dependência de iFood e alimentos hiperpalatáveis.",
-    deadline: "2026",
-    status: "Em reconstrução",
-    nextSteps: [
-      "Planejar refeições",
-      "Priorizar refeições preparadas",
-      "Reduzir pedidos de iFood"
-    ]
-  },
-
-  {
-    id: "project_esporte",
-    name: "Descobrir um esporte",
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    description:
-      "Encontrar um esporte no qual eu goste e possa desenvolver habilidade.",
-    deadline: null,
-    status: "Não iniciado",
-    nextSteps: [
-      "Testar diferentes modalidades"
-    ]
-  },
-
-  {
-    id: "project_transformacao_fisica",
-    name: "Transformação Física",
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    description:
-      "Construir uma evolução física sustentável entre 2026 e 2027.",
-    deadline: "2027",
-    status: "Em andamento",
-    nextSteps: [
-      "Manter rotina de atividade física",
-      "Melhorar alimentação",
-      "Acompanhar evolução física"
-    ]
-  },
-
-  {
-    id: "project_autocuidado",
-    name: "Construção da rotina de autocuidado",
-    area: "Saúde",
-    objective: "Construir uma rotina de autocuidado",
-    description:
-      "Estruturar uma rotina que combine autocuidado, atividade física, organização e tempo pessoal.",
-    deadline: "2026",
-    status: "Em construção",
-    nextSteps: [
-      "Definir rotina matinal",
-      "Definir rotina noturna",
-      "Criar rotina doméstica",
-      "Preservar tempo pessoal"
-    ]
-  },
-
-  {
-    id: "project_mba",
-    name: "Concluir MBA",
-    area: "Carreira",
-    objective: "Desenvolvimento profissional",
-    description:
-      "Concluir a pós-graduação em andamento.",
-    deadline: "2026",
-    status: "Em andamento",
-    nextSteps: [
-      "Acompanhar aulas",
-      "Realizar provas",
-      "Entregar atividades nos prazos"
-    ]
-  },
-
-  {
-    id: "project_butantan",
-    name: "Palestra Instituto Butantan",
-    area: "Carreira",
-    objective: "Desenvolver comunicação, oratória e influência",
-    description:
-      "Realizar a primeira palestra externa sobre TPM.",
-    deadline: "2026",
-    status: "Em andamento",
-    nextSteps: [
-      "Preparar apresentação",
-      "Ensaiar",
-      "Realizar palestra"
-    ],
-    milestone: "Primeira palestra externa"
-  },
-
-  {
-    id: "project_espanhol_profissional",
-    name: "Desenvolvimento do espanhol profissional",
-    area: "Desenvolvimento",
-    objective: "Desenvolver espanhol profissional",
-    description:
-      "Desenvolver espanhol suficiente para atuar profissionalmente com Argentina e México.",
-    deadline: "2026-11",
-    status: "Em andamento",
-    nextSteps: [
-      "Realizar curso disponível",
-      "Estudar regularmente",
-      "Praticar conversação",
-      "Acompanhar evolução de proficiência"
-    ]
-  },
-
-  {
-    id: "project_especializacao",
-    name: "Especialização técnica em Melhoria Contínua",
-    area: "Carreira",
-    objective: "Tornar-se referência em TPM e Melhoria Contínua",
-    description:
-      "Aprofundar conhecimentos técnicos e metodológicos em melhoria contínua.",
-    deadline: null,
-    status: "Planejamento",
-    nextSteps: []
-  },
-
-  {
-    id: "project_lideranca",
-    name: "Desenvolvimento de liderança",
-    area: "Carreira",
-    objective: "Chegar à gestão",
-    description:
-      "Desenvolver competências necessárias para liderar pessoas e posteriormente assumir uma posição gerencial.",
-    deadline: null,
-    status: "Contínuo",
-    nextSteps: [
-      "Buscar experiências de liderança",
-      "Desenvolver capacidade de feedback",
-      "Desenvolver direcionamento estratégico",
-      "Acompanhar feedbacks"
-    ]
-  },
-
-  {
-    id: "project_portfolio",
-    name: "Portfólio profissional",
-    area: "Carreira",
-    objective: "Tornar-se referência em TPM e Melhoria Contínua",
-    description:
-      "Construir um portfólio de experiências e entregas profissionais.",
-    deadline: null,
-    status: "Em construção",
-    nextSteps: [
-      "Registrar palestras",
-      "Registrar apresentações",
-      "Produzir materiais técnicos",
-      "Registrar projetos relevantes"
-    ]
-  },
-
-  {
-    id: "project_carro",
-    name: "Comprar primeiro carro",
-    area: "Finanças e Patrimônio",
-    objective: "Construir liberdade financeira e patrimônio",
-    description:
-      "Comprar o primeiro carro sem comprometer a estabilidade financeira.",
-    deadline: "2027",
-    status: "Planejamento",
-    nextSteps: [
-      "Definir modelo",
-      "Definir orçamento",
-      "Criar fundo para o carro",
-      "Desenvolver confiança para dirigir"
-    ]
-  },
-
-  {
-    id: "project_espanha",
-    name: "Intercâmbio de espanhol na Espanha",
-    area: "Desenvolvimento e Experiências",
-    objective: "Construir uma vida rica em experiências",
-    description:
-      "Fazer aproximadamente 15 dias de aulas de espanhol na Espanha.",
-    deadline: "2027",
-    status: "Planejamento",
-    nextSteps: [
-      "Planejar financeiramente",
-      "Escolher escola",
-      "Organizar viagem"
-    ]
-  },
-
-  {
-    id: "project_casa",
-    name: "Comprar casa",
-    area: "Finanças e Patrimônio",
-    objective: "Construir liberdade financeira e patrimônio",
-    description:
-      "Construir patrimônio por meio da aquisição de uma casa.",
-    deadline: null,
-    status: "Longo prazo",
-    nextSteps: []
-  }
-];
-
-
-// ============================================
-// ROTINAS / HÁBITOS
-// ============================================
-
-const routines = [
-  {
-    id: "routine_academia",
-    name: "Academia",
-    frequency: "3x por semana",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: null
-  },
-
-  {
-    id: "routine_passos",
-    name: "Caminhada / passos",
-    frequency: "Diária",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: "8.000–10.000 passos/dia"
-  },
-
-  {
-    id: "routine_agua",
-    name: "Água",
-    frequency: "Diária",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: "2,5 L/dia"
-  },
-
-  {
-    id: "routine_sono",
-    name: "Sono",
-    frequency: "Diária",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: "aproximadamente 7h30/noite"
-  },
-
-  {
-    id: "routine_alimentacao",
-    name: "Alimentação planejada",
-    frequency: "Diária",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: "Reduzir iFood e priorizar refeições preparadas"
-  },
-
-  {
-    id: "routine_organizacao",
-    name: "Organização da casa",
-    frequency: "Diária",
-    days: null,
-    area: "Organização e Vida Pessoal",
-    objective: "Desenvolver organização pessoal e doméstica",
-    target: "aproximadamente 15 minutos/dia"
-  },
-
-  {
-    id: "routine_alongamento",
-    name: "Alongamento",
-    frequency: "Diária",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: "5–10 minutos"
-  },
-
-  {
-    id: "routine_espanhol",
-    name: "Espanhol",
-    frequency: "Regular",
-    days: null,
-    area: "Desenvolvimento",
-    objective: "Desenvolver espanhol profissional",
-    target: null
-  },
-
-  {
-    id: "routine_estudo_profissional",
-    name: "Estudo profissional",
-    frequency: "Semanal",
-    days: null,
-    area: "Carreira",
-    objective: "Tornar-se referência em TPM e Melhoria Contínua",
-    target: null
-  },
-
-  {
-    id: "routine_networking",
-    name: "Networking",
-    frequency: "Regular",
-    days: null,
-    area: "Carreira",
-    objective: "Tornar-se referência em TPM e Melhoria Contínua",
-    target: null
-  },
-
-  {
-    id: "routine_revisao_semanal",
-    name: "Revisão semanal",
-    frequency: "Semanal",
-    days: ["Domingo"],
-    area: "Organização e Vida Pessoal",
-    objective: "Desenvolver organização pessoal e doméstica",
-    target: null
-  },
-
-  {
-    id: "routine_sem_celular",
-    name: "Tempo sem celular antes de dormir",
-    frequency: "Diária",
-    days: null,
-    area: "Saúde",
-    objective: "Construir um estilo de vida saudável e sustentável",
-    target: null
-  }
-];
-
-
-// ============================================
-// INDICADORES
-// ============================================
-
-const indicators = [
-  {
-    id: "indicator_peso",
-    name: "Peso",
-    area: "Saúde",
-    unit: "kg",
-    frequency: "Semanal",
-    target: null
-  },
-
-  {
-    id: "indicator_treinos",
-    name: "Treinos realizados",
-    area: "Saúde",
-    unit: "treinos",
-    frequency: "Semanal",
-    target: 3
-  },
-
-  {
-    id: "indicator_ifood",
-    name: "Dias sem iFood",
-    area: "Saúde",
-    unit: "dias",
-    frequency: "Semanal",
-    target: null
-  },
-
-  {
-    id: "indicator_sono",
-    name: "Sono",
-    area: "Saúde",
-    unit: "horas",
-    frequency: "Diária",
-    target: 7.5
-  },
-
-  {
-    id: "indicator_passos",
-    name: "Passos",
-    area: "Saúde",
-    unit: "passos",
-    frequency: "Diária",
-    target: 8000
-  },
-
-  {
-    id: "indicator_espanhol_horas",
-    name: "Horas de espanhol",
-    area: "Desenvolvimento",
-    unit: "horas",
-    frequency: "Semanal",
-    target: null
-  },
-
-  {
-    id: "indicator_espanhol_conversacao",
-    name: "Conversação em espanhol",
-    area: "Desenvolvimento",
-    unit: "sessões",
-    frequency: "Semanal",
-    target: null
-  },
-
-  {
-    id: "indicator_espanhol_proficiencia",
-    name: "Proficiência em espanhol",
-    area: "Desenvolvimento",
-    unit: "nível",
-    frequency: "Mensal",
-    target: null
-  },
-
-  {
-    id: "indicator_patrimonio",
-    name: "Patrimônio líquido",
-    area: "Finanças",
-    unit: "R$",
-    frequency: "Mensal",
-    target: null
-  },
-
-  {
-    id: "indicator_reserva",
-    name: "Reserva financeira",
-    area: "Finanças",
-    unit: "R$",
-    frequency: "Mensal",
-    target: null
-  },
-
-  {
-    id: "indicator_fundo_carro",
-    name: "Fundo carro",
-    area: "Finanças",
-    unit: "R$",
-    frequency: "Mensal",
-    target: null
-  },
-
-  {
-    id: "indicator_fundo_casa",
-    name: "Fundo casa",
-    area: "Finanças",
-    unit: "R$",
-    frequency: "Mensal",
-    target: null
-  },
-
-  {
-    id: "indicator_palestras",
-    name: "Palestras realizadas",
-    area: "Carreira",
-    unit: "palestras",
-    frequency: "Anual",
-    target: null
-  },
-
-  {
-    id: "indicator_projetos",
-    name: "Projetos estratégicos",
-    area: "Carreira",
-    unit: "projetos",
-    frequency: "Anual",
-    target: null
-  },
-
-  {
-    id: "indicator_estudo",
-    name: "Horas de estudo profissional",
-    area: "Carreira",
-    unit: "horas",
-    frequency: "Semanal",
-    target: null
-  },
-
-  {
-    id: "indicator_networking",
-    name: "Atividades de networking",
-    area: "Carreira",
-    unit: "atividades",
-    frequency: "Mensal",
-    target: null
-  }
-];
-
-// ============================================
-// PARTE 3/3 — CICLOS, PRIORIDADES, REVISÕES,
-// FRASES, DECISÕES E CONFIGURAÇÃO DO SISTEMA
-// ============================================
-
-
-// ============================================
-// PRIORIDADES DO ANO — 2026
-// ============================================
-
-const yearlyPriorities = [
-  {
-    id: "priority_2026_saude",
-    year: 2026,
-    name: "Saúde",
-    description:
-      "Retomar e consolidar uma rotina de saúde física e mental, incluindo atividade física, alimentação, sono, autocuidado e organização da rotina.",
-    priority: 1,
-    area: "Saúde",
-    status: "Ativa",
-    focus: true
-  },
-
-  {
-    id: "priority_2026_espanhol",
-    year: 2026,
-    name: "Espanhol",
-    description:
-      "Desenvolver o espanhol de maneira mensurável e suficiente para atender às demandas profissionais, especialmente antes das viagens para Argentina e México.",
-    priority: 2,
-    area: "Desenvolvimento",
-    deadline: "2026-11",
-    status: "Ativa",
-    focus: true
-  },
-
-  {
-    id: "priority_2026_mba",
-    year: 2026,
-    name: "MBA",
-    description:
-      "Manter o MBA em andamento e concluir aulas, provas e entregas dentro dos prazos.",
-    priority: 3,
-    area: "Carreira",
-    deadline: "2026",
-    status: "Ativa",
-    focus: true
-  }
-];
-
-
-// ============================================
-// PRINCÍPIOS DO CICLO
-// ============================================
-
-const cyclePrinciples = [
-  "Os objetivos de longo prazo continuam existindo mesmo quando não são prioridade no ciclo atual.",
-  "O foco anual muda conforme o momento da vida.",
-  "Não é necessário executar todos os objetivos simultaneamente.",
-  "Datas rígidas devem ser utilizadas apenas quando existe uma necessidade concreta.",
-  "Não alcançar uma meta na idade inicialmente imaginada não significa fracasso.",
-  "O sistema deve preservar direção e continuidade, não criar cobrança excessiva.",
-  "O principal gargalo atual é execução e consistência, não planejamento.",
-  "Indicadores devem ajudar a enxergar a realidade, não gerar culpa.",
-  "O sistema precisa ser simples o suficiente para ser utilizado.",
-  "A ferramenta não deve se transformar em um projeto que concorra com a própria vida."
-];
-
-
-// ============================================
-// HORIZONTES DE PLANEJAMENTO
-// ============================================
-
-const planningHorizons = [
-  {
-    id: "horizon_life",
-    name: "Visão de Vida",
-    horizon: "Longo prazo",
-    purpose:
-      "Manter visível a vida que estou tentando construir."
-  },
-
-  {
-    id: "horizon_35",
-    name: "Visão aos 35",
-    horizon: "Longo prazo",
-    purpose:
-      "Representar a mulher e a vida que quero ter aos 35 anos."
-  },
-
-  {
-    id: "horizon_year",
-    name: "Ano",
-    horizon: "Anual",
-    purpose:
-      "Definir quais áreas receberão maior atenção neste período."
-  },
-
-  {
-    id: "horizon_cycle",
-    name: "Ciclo",
-    horizon: "Temporário",
-    purpose:
-      "Transformar prioridades anuais em foco concreto de execução."
-  },
-
-  {
-    id: "horizon_week",
-    name: "Semana",
-    horizon: "Curto prazo",
-    purpose:
-      "Definir as prioridades práticas da semana e facilitar a execução."
-  },
-
-  {
-    id: "horizon_day",
-    name: "Dia",
-    horizon: "Diário",
-    purpose:
-      "Executar hábitos, tarefas e compromissos sem perder a direção maior."
-  }
-];
-
-
-// ============================================
-// HIERARQUIA DO SISTEMA
-// ============================================
-
-const systemHierarchy = [
-  {
-    level: 1,
-    name: "Visão",
-    description:
-      "A vida que quero construir e a pessoa que quero me tornar."
-  },
-
-  {
-    level: 2,
-    name: "Áreas da Vida",
-    description:
-      "Os grandes campos que sustentam minha vida."
-  },
-
-  {
-    level: 3,
-    name: "Objetivos",
-    description:
-      "Mudanças ou resultados importantes que quero construir em cada área."
-  },
-
-  {
-    level: 4,
-    name: "Projetos",
-    description:
-      "Iniciativas concretas com começo, desenvolvimento e conclusão."
-  },
-
-  {
-    level: 5,
-    name: "Hábitos e Rotinas",
-    description:
-      "Comportamentos recorrentes que sustentam os objetivos."
-  },
-
-  {
-    level: 6,
-    name: "Indicadores",
-    description:
-      "Dados utilizados para enxergar progresso e realidade."
-  },
-
-  {
-    level: 7,
-    name: "Tarefas",
-    description:
-      "Ações concretas necessárias para executar projetos e rotinas."
-  }
-];
-
-
-// ============================================
-// REVISÃO SEMANAL
-// ============================================
-
-const weeklyReview = {
-  id: "weekly_review",
-  name: "Revisão semanal",
-  frequency: "Semanal",
-  preferredDay: "Domingo",
-
-  questions: [
-    "Quais são as três prioridades da semana?",
-    "O que realmente precisa acontecer nesta semana?",
-    "Qual é o maior risco da semana?",
-    "Existe alguma tarefa importante que estou adiando?",
-    "Como posso facilitar minha execução?",
-    "Quais hábitos são mais importantes nesta semana?",
-    "O que precisa ser preparado antecipadamente?",
-    "O que posso retirar da agenda para criar espaço?"
-  ],
-
-  outputs: [
-    "3 prioridades da semana",
-    "riscos identificados",
-    "tarefas importantes",
-    "hábitos prioritários",
-    "ajustes de agenda"
-  ]
-};
-
-
-// ============================================
-// REVISÃO MENSAL
-// ============================================
-
-const monthlyReview = {
-  id: "monthly_review",
-  name: "Revisão mensal",
-  frequency: "Mensal",
-
-  questions: [
-    "O que evoluiu?",
-    "O que não evoluiu?",
-    "O que aprendi?",
-    "Do que me orgulho?",
-    "O que me atrapalhou?",
-    "Onde estou repetindo um padrão?",
-    "O que precisa mudar no próximo mês?",
-    "Quais objetivos precisam de atenção?",
-    "Quais objetivos podem continuar em segundo plano?"
-  ],
-
-  outputs: [
-    "principais avanços",
-    "principais dificuldades",
-    "aprendizados",
-    "ajustes para o próximo mês",
-    "objetivos que precisam de atenção"
-  ]
-};
-
-
-// ============================================
-// REVISÃO DO CICLO
-// ============================================
-
-const cycleReview = {
-  id: "cycle_review",
-  name: "Revisão do ciclo",
-  frequency: "Ao final de cada ciclo",
-
-  questions: [
-    "O que eu me propus a fazer?",
-    "O que realmente foi feito?",
-    "O que gerou resultado?",
-    "O que não funcionou?",
-    "O que estava sob meu controle?",
-    "O que estava fora do meu controle?",
-    "O que devo manter?",
-    "O que devo parar?",
-    "O que devo começar?",
-    "O que merece entrar no próximo ciclo?"
-  ]
-};
-
-
-// ============================================
-// REVISÃO ANUAL
-// ============================================
-
-const yearlyReview = {
-  id: "yearly_review",
-  name: "Revisão anual",
-  frequency: "Anual",
-
-  questions: [
-    "Como foi meu ano?",
-    "O que mudou na minha vida?",
-    "Quais objetivos avançaram?",
-    "Quais objetivos ficaram parados?",
-    "Quais projetos concluí?",
-    "Quais hábitos consegui consolidar?",
-    "O que aprendi sobre mim?",
-    "O que não quero repetir?",
-    "O que quero preservar?",
-    "O que passou a ser importante?",
-    "O que deixou de fazer sentido?",
-    "Quais serão minhas prioridades no próximo ano?"
-  ]
-};
-
-
-// ============================================
-// FRASES / NORTE
-// ============================================
-
-const purposeQuotes = [
-  {
-    id: "quote_1",
-    text: "Pequenas melhorias, todos os dias.",
-    type: "Sistema"
-  },
-
-  {
-    id: "quote_2",
-    text: "O futuro que eu quero depende das decisões que tomo hoje.",
-    type: "Sistema"
-  },
-
-  {
-    id: "quote_3",
-    text: "Meu pai lutou para que eu tivesse uma oportunidade que ele não teve.",
-    type: "Propósito"
-  },
-
-  {
-    id: "quote_4",
-    text:
-      "O importante não é chegar amanhã. É continuar se direcionando para a vida que quero construir.",
-    type: "Direção"
-  }
-];
-
-
-// ============================================
-// DECISÕES IMPORTANTES DO SISTEMA
-// ============================================
-
-const importantDecisions = [
-  {
-    id: "decision_1",
-    category: "Visão",
-    text:
-      "Não abandonar objetivos de longo prazo apenas porque são numerosos."
-  },
-
-  {
-    id: "decision_2",
-    category: "Planejamento",
-    text:
-      "Não transformar todos os objetivos em metas com datas rígidas."
-  },
-
-  {
-    id: "decision_3",
-    category: "Planejamento",
-    text:
-      "Usar datas rígidas apenas quando houver necessidade concreta."
-  },
-
-  {
-    id: "decision_4",
-    category: "Prioridades",
-    text:
-      "Manter saúde e espanhol como prioridades de 2026."
-  },
-
-  {
-    id: "decision_5",
-    category: "Carreira",
-    text:
-      "Manter o MBA como compromisso de 2026."
-  },
-
-  {
-    id: "decision_6",
-    category: "Finanças",
-    text:
-      "Tratar dinheiro como meio para liberdade, segurança, patrimônio e experiências."
-  },
-
-  {
-    id: "decision_7",
-    category: "Finanças",
-    text:
-      "Não assumir dívidas financeiras que comprometam a liberdade."
-  },
-
-  {
-    id: "decision_8",
-    category: "Finanças",
-    text:
-      "Preferir adiar carro ou casa a perder estabilidade financeira."
-  },
-
-  {
-    id: "decision_9",
-    category: "Carreira",
-    text:
-      "Desenvolver liderança porque ela aparece fortemente na visão de futuro."
-  },
-
-  {
-    id: "decision_10",
-    category: "Desenvolvimento",
-    text:
-      "Desenvolver espanhol antes de retomar o foco no inglês."
-  },
-
-  {
-    id: "decision_11",
-    category: "Sistema",
-    text:
-      "Manter a distinção entre visão, objetivo, projeto, hábito e indicador."
-  },
-
-  {
-    id: "decision_12",
-    category: "Sistema",
-    text:
-      "Não transformar o sistema em uma ferramenta excessivamente complexa."
-  },
-
-  {
-    id: "decision_13",
-    category: "Execução",
-    text:
-      "Priorizar execução e consistência em vez de continuar aperfeiçoando o sistema."
-  },
-
-  {
-    id: "decision_14",
-    category: "Indicadores",
-    text:
-      "Usar indicadores objetivos em vez de depender apenas de percepção ou feeling."
-  },
-
-  {
-    id: "decision_15",
-    category: "Sucesso",
-    text:
-      "Não considerar sucesso como status ou superioridade sobre outras pessoas."
-  },
-
-  {
-    id: "decision_16",
-    category: "Saúde",
-    text:
-      "Manter saúde mental e descanso como parte explícita da visão de sucesso."
-  },
-
-  {
-    id: "decision_17",
-    category: "Vida pessoal",
-    text:
-      "Preservar os finais de semana para família, amigos e vida pessoal, salvo necessidade profissional."
-  },
-
-  {
-    id: "decision_18",
-    category: "Propósito",
-    text:
+    reviews: [],
+    finance: { reserva: 33000, metaReserva: 60000, fundoCarro: 0, metaFundoCarro: 30000 },
+    decisions: [
+      "Não abandonar objetivos de longo prazo apenas porque são numerosos.",
+      "Não transformar todos os objetivos em prazos rígidos — usar datas apenas quando há necessidade concreta.",
+      "Priorizar execução e consistência: o principal gargalo é execução, não planejamento.",
+      "Não transformar o sistema em um projeto — a ferramenta precisa facilitar a vida, não competir com ela.",
+      "Dinheiro é meio, não fim: segurança, liberdade, patrimônio e experiências são o objetivo.",
+      "Saúde inclui descanso e saúde mental — não é uma busca obsessiva por fitness.",
+      "Preservar a vida pessoal: finais de semana protegidos do trabalho, salvo necessidade real.",
       "Manter viva a memória do pai e reconhecer sua influência na construção da vida atual."
+    ]
+  };
+}
+
+async function loadState(){
+  try{
+    const { data, error } = await sb
+      .from('app_data')
+      .select('data')
+      .eq('user_id', currentUser.id)
+      .maybeSingle();
+    if(error) throw error;
+    if(data && data.data){
+      state = data.data;
+      const def = defaultState();
+      if(!state.finance) state.finance = def.finance;
+      if(!state.reviews) state.reviews = [];
+      if(!state.decisions) state.decisions = def.decisions;
+      if(!state.areas) state.areas = def.areas;
+    } else {
+      state = defaultState();
+      await persist();
+    }
+  }catch(e){
+    console.error(e);
+    state = defaultState();
+    showToast('Não foi possível carregar do servidor. Usando dados padrão.');
   }
-];
+  renderAll();
+}
 
+async function persist(){
+  if(!currentUser) return;
+  setSyncStatus('saving');
+  try{
+    const { error } = await sb
+      .from('app_data')
+      .upsert({ user_id: currentUser.id, data: state, updated_at: new Date().toISOString() });
+    if(error) throw error;
+    setSyncStatus('ok');
+  }catch(e){
+    console.error("Falha ao salvar", e);
+    setSyncStatus('error');
+    showToast("Não foi possível salvar no servidor.");
+  }
+}
 
-// ============================================
-// PRINCÍPIOS DE FUNCIONAMENTO DO APP
-// ============================================
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  setSyncStatus('saving');
+  saveTimer = setTimeout(persist, 600);
+}
 
-const appPrinciples = {
-  mainPurpose:
-    "Não criar um sistema para controlar minha vida, mas um sistema para não perder de vista a vida que decidi construir.",
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
 
-  rules: [
-    "Mostrar direção antes de mostrar tarefas.",
-    "Manter a visão de longo prazo sempre acessível.",
-    "Mostrar poucas prioridades por vez.",
-    "Transformar objetivos em projetos executáveis.",
-    "Transformar projetos em próximas ações.",
-    "Acompanhar hábitos sem transformar o sistema em uma fonte de culpa.",
-    "Utilizar indicadores para enxergar evolução.",
-    "Permitir que objetivos fiquem em segundo plano sem serem apagados.",
-    "Facilitar revisões periódicas.",
-    "Evitar excesso de configuração.",
-    "Evitar excesso de notificações.",
-    "Evitar gamificação que transforme a vida em competição.",
-    "Priorizar clareza e execução."
-  ]
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+/* ============================================================
+   NAVEGAÇÃO
+============================================================ */
+const pageTitles = {dashboard:"Agora",vision:"Visão",areas:"Áreas da vida",goals:"Metas",projects:"Projetos",habits:"Hábitos & Rotinas",reviews:"Revisões",decisions:"Decisões"};
+
+document.querySelectorAll('.nav-button').forEach(btn=>{
+  btn.addEventListener('click', ()=>showPage(btn.dataset.page, btn));
+});
+
+function showPage(pageName, button){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const target = document.getElementById('page-'+pageName);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.nav-button').forEach(b=>b.classList.remove('active'));
+  if(button) button.classList.add('active');
+  else document.querySelector(`.nav-button[data-page="${pageName}"]`).classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[pageName] || "Meu Sistema";
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(pageName==='reviews') renderReviewForm();
+}
+
+function updateDate(){
+  const el = document.getElementById('currentDate');
+  const now = new Date();
+  const formatted = now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  el.textContent = formatted.charAt(0).toUpperCase()+formatted.slice(1);
+}
+updateDate();
+
+/* ============================================================
+   HELPERS DE DATA
+============================================================ */
+function todayStr(d){ const dt = d||new Date(); return dt.toISOString().slice(0,10); }
+function fmtDate(iso){ if(!iso) return ''; const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+function daysAgoStr(n){ const d=new Date(); d.setDate(d.getDate()-n); return todayStr(d); }
+
+/* ============================================================
+   MÉTRICAS DE METAS
+============================================================ */
+const metricTypes = {
+  currency: {label:"Reais (R$)", format:(v)=>"R$ "+Number(v).toLocaleString('pt-BR')},
+  count: {label:"Quantidade", format:(v,u)=>Number(v).toLocaleString('pt-BR')+(u?(" "+u):"")},
+  frequency: {label:"Frequência", format:(v,u)=>Number(v).toLocaleString('pt-BR')+(u?(" "+u):"")},
+  hours: {label:"Horas", format:(v)=>Number(v).toLocaleString('pt-BR')+"h"},
+  tasks: {label:"Tarefas", format:(v,u)=>Number(v).toLocaleString('pt-BR')+(u?(" "+u):" concluídas")}
 };
 
+function goalProgress(g){
+  if(!g.target || g.target<=0) return 0;
+  return Math.max(0, Math.min(100, Math.round((g.current/g.target)*100)));
+}
+function goalMetricText(g){
+  const mt = metricTypes[g.metricType] || metricTypes.count;
+  const cur = mt.format(g.current, g.unit).replace(g.unit?(" "+g.unit):"","");
+  return `${mt.format(g.current)} / ${mt.format(g.target)}`;
+}
 
-// ============================================
-// ESTADOS POSSÍVEIS
-// ============================================
+function areaName(id){ const a = state.areas.find(x=>x.id===id); return a?a.name:id; }
+function areaObj(id){ return state.areas.find(x=>x.id===id); }
 
-const statuses = [
-  "Não iniciado",
-  "Planejamento",
-  "Em andamento",
-  "Em reconstrução",
-  "Em pausa",
-  "Concluído",
-  "Cancelado",
-  "Contínuo",
-  "Longo prazo"
+/* ============================================================
+   RENDER: DASHBOARD
+============================================================ */
+function renderDashboard(){
+  // metrics: top 3 active goals by priority + finance
+  const activeGoals = state.goals.filter(g=>g.status==='active');
+  const grid = document.getElementById('dashMetrics');
+  grid.innerHTML = '';
+  const top = activeGoals.slice(0,3);
+  top.forEach(g=>{
+    grid.innerHTML += `<div class="card metric-card">
+      <div class="metric-label">${areaName(g.area)}</div>
+      <div class="metric-value">${goalProgress(g)}%</div>
+      <div class="metric-description">${escapeHtml(g.name)}</div>
+    </div>`;
+  });
+  grid.innerHTML += `<div class="card metric-card">
+    <div class="metric-label">Reserva financeira</div>
+    <div class="metric-value">R$ ${Number(state.finance.reserva).toLocaleString('pt-BR')}</div>
+    <div class="metric-description">Segurança e liberdade financeira.</div>
+  </div>`;
+
+  // priorities list = active goals sorted by priority
+  const order = {"Muito Alta":0,"Alta":1,"Média-Alta":2,"Média":3,"Baixa":4};
+  const sorted = [...activeGoals].sort((a,b)=>(order[a.priority]??5)-(order[b.priority]??5)).slice(0,5);
+  const pl = document.getElementById('dashPriorities');
+  pl.innerHTML = sorted.length ? sorted.map((g,i)=>`
+    <div class="priority-item">
+      <div class="priority-number">${String(i+1).padStart(2,'0')}</div>
+      <div>
+        <div class="priority-title">${escapeHtml(g.name)}</div>
+        <div class="priority-subtitle">${areaName(g.area)} · ${escapeHtml(goalMetricText(g))}</div>
+      </div>
+      <div class="priority-progress">
+        <div class="progress"><div class="progress-bar" style="width:${goalProgress(g)}%"></div></div>
+      </div>
+    </div>`).join('') : `<div class="empty-note">Nenhuma meta ativa ainda. Crie uma em "Metas".</div>`;
+
+  // habits today
+  const hl = document.getElementById('dashHabits');
+  const today = todayStr();
+  hl.innerHTML = state.habits.length ? state.habits.map(h=>{
+    const done = !!h.checks[today];
+    return `<div class="today-item ${done?'done':''}" onclick="toggleHabitCheck('${h.id}','${today}')">
+      <div class="check ${done?'done':''}">${done?'✓':''}</div>
+      <span>${escapeHtml(h.name)}</span>
+    </div>`;
+  }).join('') : `<div class="empty-note">Nenhum hábito cadastrado ainda.</div>`;
+
+  // finance
+  const fg = document.getElementById('dashFinance');
+  const f = state.finance;
+  fg.innerHTML = `
+    <div class="fin-item"><div class="fl">Reserva</div><div class="fv">R$ ${Number(f.reserva).toLocaleString('pt-BR')} / R$ ${Number(f.metaReserva).toLocaleString('pt-BR')}</div></div>
+    <div class="fin-item"><div class="fl">Fundo carro</div><div class="fv">R$ ${Number(f.fundoCarro).toLocaleString('pt-BR')} / R$ ${Number(f.metaFundoCarro).toLocaleString('pt-BR')}</div></div>
+    <div class="fin-item"><div class="fl">Progresso reserva</div><div class="fv">${f.metaReserva>0?Math.round(f.reserva/f.metaReserva*100):0}%</div></div>
+  `;
+}
+
+/* ============================================================
+   RENDER: ÁREAS
+============================================================ */
+function renderAreas(){
+  const grid = document.getElementById('areasGrid');
+  grid.innerHTML = state.areas.map(a=>{
+    const goalsInArea = state.goals.filter(g=>g.area===a.id && g.status==='active');
+    const avg = goalsInArea.length ? Math.round(goalsInArea.reduce((s,g)=>s+goalProgress(g),0)/goalsInArea.length) : null;
+    return `<article class="card area-card">
+      <div class="area-top">
+        <div class="area-icon">${a.icon}</div>
+        ${a.tag?`<span class="tag ${a.tagColor}">${a.tag}</span>`:''}
+      </div>
+      <h3>${escapeHtml(a.name)}</h3>
+      <div class="meaning">${escapeHtml(a.meaning||'')}</div>
+      <div class="area-state">
+        <span>${goalsInArea.length} meta(s) ativa(s)</span>
+        ${avg!==null?`<span>· progresso médio ${avg}%</span>`:''}
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ============================================================
+   RENDER: METAS
+============================================================ */
+function populateAreaSelects(){
+  const filter = document.getElementById('goalAreaFilter');
+  filter.innerHTML = '<option value="">Todas as áreas</option>' + state.areas.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+}
+
+function renderGoals(){
+  const areaFilter = document.getElementById('goalAreaFilter').value;
+  const statusFilter = document.getElementById('goalStatusFilter').value;
+  let list = [...state.goals];
+  if(areaFilter) list = list.filter(g=>g.area===areaFilter);
+  if(statusFilter) list = list.filter(g=>g.status===statusFilter);
+  const container = document.getElementById('goalList');
+  if(!list.length){
+    container.innerHTML = `<div class="empty-state">Nenhuma meta encontrada. Crie a primeira meta para começar a acompanhar o progresso.</div>`;
+    return;
+  }
+  container.innerHTML = list.map(g=>{
+    const pct = goalProgress(g);
+    const lastHist = g.history && g.history.length ? g.history[g.history.length-1] : null;
+    return `<article class="card goal-card">
+      <div class="goal-header">
+        <div>
+          <div class="goal-title">${escapeHtml(g.name)}</div>
+          <div class="goal-description">${escapeHtml(g.description||'')}</div>
+        </div>
+        <div class="goal-actions">
+          <button class="button small icon" title="Registrar progresso" onclick="openProgressModal('${g.id}')">＋</button>
+          <button class="button small icon" title="Editar" onclick="openGoalModal('${g.id}')">✎</button>
+          <button class="button small icon" title="${g.status==='active'?'Arquivar':'Reativar'}" onclick="toggleArchiveGoal('${g.id}')">${g.status==='active'?'⦿':'↺'}</button>
+          <button class="button small icon danger" title="Excluir" onclick="deleteGoal('${g.id}')">✕</button>
+        </div>
+      </div>
+      <div class="goal-meta">
+        <span class="tag">${areaName(g.area)}</span>
+        <span class="tag ${priorityTagColor(g.priority)}">${g.priority}</span>
+        ${g.deadline?`<span class="tag yellow">${fmtDate(g.deadline)}</span>`:''}
+        ${g.status==='archived'?`<span class="tag red">Arquivada</span>`:''}
+      </div>
+      <div class="goal-bottom">
+        <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+        <div class="goal-percent">${pct}%</div>
+      </div>
+      <div class="goal-history">${escapeHtml(goalMetricText(g))}${lastHist?` · último registro em ${fmtDate(lastHist.date)}`:''}</div>
+    </article>`;
+  }).join('');
+}
+
+function priorityTagColor(p){
+  if(p==='Muito Alta'||p==='Alta') return 'red';
+  if(p==='Média-Alta'||p==='Média') return 'yellow';
+  return '';
+}
+
+function escapeHtml(s){
+  if(s===undefined||s===null) return '';
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---- Modal: criar/editar meta ---- */
+function openGoalModal(id){
+  const g = id ? state.goals.find(x=>x.id===id) : null;
+  const areaOptions = state.areas.map(a=>`<option value="${a.id}" ${g&&g.area===a.id?'selected':''}>${escapeHtml(a.name)}</option>`).join('');
+  const metricOptions = Object.keys(metricTypes).map(k=>`<option value="${k}" ${g&&g.metricType===k?'selected':''}>${metricTypes[k].label}</option>`).join('');
+  const priorityOptions = ["Muito Alta","Alta","Média-Alta","Média","Baixa"].map(p=>`<option ${g&&g.priority===p?'selected':''}>${p}</option>`).join('');
+
+  setModal(`
+    <h2>${g?'Editar meta':'Nova meta'}</h2>
+    <div class="field"><label>Nome</label><input id="f_name" value="${g?escapeHtml(g.name):''}" placeholder="Ex: Desenvolver espanhol profissional"></div>
+    <div class="field"><label>Descrição</label><textarea id="f_desc" placeholder="Descreva o que essa meta significa">${g?escapeHtml(g.description||''):''}</textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Área</label><select id="f_area">${areaOptions}</select></div>
+      <div class="field"><label>Prioridade</label><select id="f_priority">${priorityOptions}</select></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Tipo de métrica</label><select id="f_metric">${metricOptions}</select></div>
+      <div class="field"><label>Prazo (opcional)</label><input type="date" id="f_deadline" value="${g?(g.deadline||''):''}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Valor atual</label><input type="number" id="f_current" value="${g?g.current:0}"></div>
+      <div class="field"><label>Valor alvo</label><input type="number" id="f_target" value="${g?g.target:100}"></div>
+    </div>
+    <div class="field"><label>Unidade (rótulo, opcional)</label><input id="f_unit" value="${g?escapeHtml(g.unit||''):''}" placeholder="Ex: treinos, horas, atividades"></div>
+    <div class="modal-actions">
+      <button class="button" onclick="closeModal()">Cancelar</button>
+      <button class="button primary" onclick="saveGoal('${g?g.id:''}')">Salvar meta</button>
+    </div>
+  `);
+}
+
+function saveGoal(id){
+  const name = document.getElementById('f_name').value.trim();
+  if(!name){ showToast('Dê um nome para a meta.'); return; }
+  const payload = {
+    name,
+    description: document.getElementById('f_desc').value.trim(),
+    area: document.getElementById('f_area').value,
+    priority: document.getElementById('f_priority').value,
+    metricType: document.getElementById('f_metric').value,
+    deadline: document.getElementById('f_deadline').value,
+    current: Number(document.getElementById('f_current').value)||0,
+    target: Number(document.getElementById('f_target').value)||1,
+    unit: document.getElementById('f_unit').value.trim()
+  };
+  if(id){
+    const g = state.goals.find(x=>x.id===id);
+    Object.assign(g, payload);
+  } else {
+    state.goals.push({id:uid('g'), status:'active', history:[], ...payload});
+  }
+  scheduleSave();
+  closeModal();
+  renderGoals();
+  renderDashboard();
+  renderAreas();
+  showToast('Meta salva.');
+}
+
+function toggleArchiveGoal(id){
+  const g = state.goals.find(x=>x.id===id);
+  g.status = g.status==='active' ? 'archived' : 'active';
+  scheduleSave();
+  renderGoals();
+  renderDashboard();
+}
+
+function deleteGoal(id){
+  if(!confirm('Excluir esta meta? Essa ação não pode ser desfeita.')) return;
+  state.goals = state.goals.filter(x=>x.id!==id);
+  scheduleSave();
+  renderGoals();
+  renderDashboard();
+  renderAreas();
+  showToast('Meta excluída.');
+}
+
+/* ---- Modal: registrar progresso (histórico) ---- */
+function openProgressModal(id){
+  const g = state.goals.find(x=>x.id===id);
+  setModal(`
+    <h2>Registrar progresso — ${escapeHtml(g.name)}</h2>
+    <div class="field"><label>Novo valor atual (${metricTypes[g.metricType].label})</label><input type="number" id="f_progress_value" value="${g.current}"></div>
+    <div class="field"><label>Nota (opcional)</label><input id="f_progress_note" placeholder="O que mudou?"></div>
+    <div class="modal-actions">
+      <button class="button" onclick="closeModal()">Cancelar</button>
+      <button class="button primary" onclick="saveProgress('${g.id}')">Registrar</button>
+    </div>
+  `);
+}
+
+function saveProgress(id){
+  const g = state.goals.find(x=>x.id===id);
+  const val = Number(document.getElementById('f_progress_value').value);
+  const note = document.getElementById('f_progress_note').value.trim();
+  g.current = val;
+  g.history = g.history || [];
+  g.history.push({date: todayStr(), value: val, note});
+  scheduleSave();
+  closeModal();
+  renderGoals();
+  renderDashboard();
+  showToast('Progresso registrado.');
+}
+
+/* ============================================================
+   RENDER: PROJETOS
+============================================================ */
+function projectProgress(p){
+  if(!p.tasks || !p.tasks.length) return 0;
+  const done = p.tasks.filter(t=>t.done).length;
+  return Math.round((done/p.tasks.length)*100);
+}
+
+function renderProjects(){
+  const container = document.getElementById('projectList');
+  if(!state.projects.length){
+    container.innerHTML = `<div class="empty-state">Nenhum projeto ainda. Crie um projeto e vincule a uma meta.</div>`;
+    return;
+  }
+  container.innerHTML = state.projects.map(p=>{
+    const pct = projectProgress(p);
+    const goal = p.goalId ? state.goals.find(g=>g.id===p.goalId) : null;
+    return `<article class="card project-card">
+      <div class="project-top">
+        <div>
+          <span class="tag">${areaName(p.area)}</span>
+          <div class="project-title">${escapeHtml(p.name)}</div>
+        </div>
+        <div class="goal-actions">
+          <button class="button small icon" title="Editar" onclick="openProjectModal('${p.id}')">✎</button>
+          <button class="button small icon danger" title="Excluir" onclick="deleteProject('${p.id}')">✕</button>
+        </div>
+      </div>
+      <div class="project-description">${escapeHtml(p.description||'')}</div>
+      ${goal?`<div class="small muted" style="margin-top:8px">Vinculado à meta: ${escapeHtml(goal.name)}</div>`:''}
+      <div class="goal-bottom" style="margin-top:12px">
+        <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+        <div class="goal-percent">${pct}%</div>
+      </div>
+      <div class="task-list">
+        ${(p.tasks||[]).map(t=>`
+          <div class="task-item ${t.done?'done':''}">
+            <input type="checkbox" ${t.done?'checked':''} onchange="toggleTask('${p.id}','${t.id}')">
+            <span>${escapeHtml(t.title)}</span>
+            <button class="button small icon" style="margin-left:auto" onclick="deleteTask('${p.id}','${t.id}')">✕</button>
+          </div>`).join('')}
+      </div>
+      <div class="task-add">
+        <input placeholder="Adicionar tarefa..." id="newtask_${p.id}" onkeydown="if(event.key==='Enter'){addTask('${p.id}')}">
+        <button class="button small" onclick="addTask('${p.id}')">+</button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function openProjectModal(id){
+  const p = id ? state.projects.find(x=>x.id===id) : null;
+  const areaOptions = state.areas.map(a=>`<option value="${a.id}" ${p&&p.area===a.id?'selected':''}>${escapeHtml(a.name)}</option>`).join('');
+  const goalOptions = '<option value="">Nenhuma</option>' + state.goals.map(g=>`<option value="${g.id}" ${p&&p.goalId===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('');
+  const statusOptions = ["Não iniciado","Planejamento","Em andamento","Em pausa","Concluído"].map(s=>`<option ${p&&p.status===s?'selected':''}>${s}</option>`).join('');
+  setModal(`
+    <h2>${p?'Editar projeto':'Novo projeto'}</h2>
+    <div class="field"><label>Nome</label><input id="f_pname" value="${p?escapeHtml(p.name):''}" placeholder="Ex: Retorno à academia"></div>
+    <div class="field"><label>Descrição</label><textarea id="f_pdesc">${p?escapeHtml(p.description||''):''}</textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Área</label><select id="f_parea">${areaOptions}</select></div>
+      <div class="field"><label>Status</label><select id="f_pstatus">${statusOptions}</select></div>
+    </div>
+    <div class="field"><label>Vincular a meta (opcional)</label><select id="f_pgoal">${goalOptions}</select></div>
+    <div class="modal-actions">
+      <button class="button" onclick="closeModal()">Cancelar</button>
+      <button class="button primary" onclick="saveProject('${p?p.id:''}')">Salvar projeto</button>
+    </div>
+  `);
+}
+
+function saveProject(id){
+  const name = document.getElementById('f_pname').value.trim();
+  if(!name){ showToast('Dê um nome para o projeto.'); return; }
+  const payload = {
+    name,
+    description: document.getElementById('f_pdesc').value.trim(),
+    area: document.getElementById('f_parea').value,
+    status: document.getElementById('f_pstatus').value,
+    goalId: document.getElementById('f_pgoal').value || null
+  };
+  if(id){
+    const p = state.projects.find(x=>x.id===id);
+    Object.assign(p, payload);
+  } else {
+    state.projects.push({id:uid('p'), tasks:[], ...payload});
+  }
+  scheduleSave();
+  closeModal();
+  renderProjects();
+  showToast('Projeto salvo.');
+}
+
+function deleteProject(id){
+  if(!confirm('Excluir este projeto?')) return;
+  state.projects = state.projects.filter(x=>x.id!==id);
+  scheduleSave();
+  renderProjects();
+  showToast('Projeto excluído.');
+}
+
+function addTask(pid){
+  const input = document.getElementById('newtask_'+pid);
+  const title = input.value.trim();
+  if(!title) return;
+  const p = state.projects.find(x=>x.id===pid);
+  p.tasks = p.tasks || [];
+  p.tasks.push({id:uid('t'), title, done:false});
+  scheduleSave();
+  renderProjects();
+}
+function toggleTask(pid,tid){
+  const p = state.projects.find(x=>x.id===pid);
+  const t = p.tasks.find(x=>x.id===tid);
+  t.done = !t.done;
+  scheduleSave();
+  renderProjects();
+}
+function deleteTask(pid,tid){
+  const p = state.projects.find(x=>x.id===pid);
+  p.tasks = p.tasks.filter(x=>x.id!==tid);
+  scheduleSave();
+  renderProjects();
+}
+
+/* ============================================================
+   RENDER: HÁBITOS
+============================================================ */
+let expandedHabit = null;
+let calendarMonthOffset = {};
+
+function habitStreak(h){
+  let streak = 0;
+  let cursor = new Date();
+  // if today not checked, start counting from yesterday
+  if(!h.checks[todayStr(cursor)]){
+    cursor.setDate(cursor.getDate()-1);
+  }
+  while(h.checks[todayStr(cursor)]){
+    streak++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return streak;
+}
+
+function habitCompletionRate(h){
+  // last 30 days
+  let checkedDays = 0;
+  for(let i=0;i<30;i++){
+    if(h.checks[daysAgoStr(i)]) checkedDays++;
+  }
+  const expected = Math.round((h.frequency/7)*30);
+  if(expected<=0) return 0;
+  return Math.min(100, Math.round((checkedDays/expected)*100));
+}
+
+function renderHabits(){
+  const container = document.getElementById('habitList');
+  if(!state.habits.length){
+    container.innerHTML = `<div class="empty-state">Nenhum hábito cadastrado. Crie o primeiro hábito para começar a acompanhar.</div>`;
+    return;
+  }
+  const today = todayStr();
+  container.innerHTML = state.habits.map(h=>{
+    const done = !!h.checks[today];
+    const streak = habitStreak(h);
+    const rate = habitCompletionRate(h);
+    const isExpanded = expandedHabit===h.id;
+    return `<div>
+      <div class="card habit-card">
+        <button class="habit-check-btn ${done?'done':''}" onclick="toggleHabitCheck('${h.id}','${today}')" title="Marcar hoje">${done?'✓':''}</button>
+        <div class="habit-info">
+          <div class="habit-name">${escapeHtml(h.name)}</div>
+          <div class="habit-details">${areaName(h.area)} · meta ${h.frequency}x/semana · <span class="habit-cal-toggle" onclick="toggleHabitCalendar('${h.id}')">${isExpanded?'ocultar calendário':'ver calendário'}</span></div>
+        </div>
+        <div class="habit-stats">
+          <div class="habit-stat"><b>${streak}</b><span>sequência</span></div>
+          <div class="habit-stat"><b>${rate}%</b><span>cumprimento</span></div>
+        </div>
+        <div class="goal-actions">
+          <button class="button small icon" title="Editar" onclick="openHabitModal('${h.id}')">✎</button>
+          <button class="button small icon danger" title="Excluir" onclick="deleteHabit('${h.id}')">✕</button>
+        </div>
+      </div>
+      ${isExpanded?`<div class="card card-padding" style="margin-top:6px">${renderCalendar(h)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function toggleHabitCheck(hid, dateStr){
+  const h = state.habits.find(x=>x.id===hid);
+  if(h.checks[dateStr]) delete h.checks[dateStr];
+  else h.checks[dateStr] = true;
+  scheduleSave();
+  renderHabits();
+  renderDashboard();
+}
+
+function toggleHabitCalendar(hid){
+  expandedHabit = expandedHabit===hid ? null : hid;
+  if(!(hid in calendarMonthOffset)) calendarMonthOffset[hid]=0;
+  renderHabits();
+}
+
+function renderCalendar(h){
+  const offset = calendarMonthOffset[h.id] || 0;
+  const base = new Date();
+  base.setDate(1);
+  base.setMonth(base.getMonth()+offset);
+  const year = base.getFullYear(), month = base.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startWeekday = firstDay.getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthName = base.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const dows = ['D','S','T','Q','Q','S','S'];
+  let cells = dows.map(d=>`<div class="dow">${d}</div>`).join('');
+  for(let i=0;i<startWeekday;i++) cells += `<div class="day empty"></div>`;
+  const now = new Date();
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(year, month, d);
+    const ds = todayStr(dateObj);
+    const isFuture = dateObj > now;
+    const done = !!h.checks[ds];
+    cells += `<div class="day ${done?'done':''} ${isFuture?'future':''}" ${isFuture?'':`onclick="toggleHabitCheck('${h.id}','${ds}')"`}>${d}</div>`;
+  }
+  return `
+    <div class="cal-nav">
+      <button class="button small" onclick="changeMonth('${h.id}',-1)">‹</button>
+      <b>${monthName.charAt(0).toUpperCase()+monthName.slice(1)}</b>
+      <button class="button small" onclick="changeMonth('${h.id}',1)">›</button>
+    </div>
+    <div class="calendar">${cells}</div>
+  `;
+}
+
+function changeMonth(hid, delta){
+  calendarMonthOffset[hid] = (calendarMonthOffset[hid]||0) + delta;
+  renderHabits();
+}
+
+function openHabitModal(id){
+  const h = id ? state.habits.find(x=>x.id===id) : null;
+  const areaOptions = state.areas.map(a=>`<option value="${a.id}" ${h&&h.area===a.id?'selected':''}>${escapeHtml(a.name)}</option>`).join('');
+  setModal(`
+    <h2>${h?'Editar hábito':'Novo hábito'}</h2>
+    <div class="field"><label>Nome</label><input id="f_hname" value="${h?escapeHtml(h.name):''}" placeholder="Ex: Academia"></div>
+    <div class="field-row">
+      <div class="field"><label>Área</label><select id="f_harea">${areaOptions}</select></div>
+      <div class="field"><label>Frequência (x por semana)</label><input type="number" min="1" max="7" id="f_hfreq" value="${h?h.frequency:3}"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="button" onclick="closeModal()">Cancelar</button>
+      <button class="button primary" onclick="saveHabit('${h?h.id:''}')">Salvar hábito</button>
+    </div>
+  `);
+}
+
+function saveHabit(id){
+  const name = document.getElementById('f_hname').value.trim();
+  if(!name){ showToast('Dê um nome para o hábito.'); return; }
+  const payload = {
+    name,
+    area: document.getElementById('f_harea').value,
+    frequency: Math.max(1, Math.min(7, Number(document.getElementById('f_hfreq').value)||1))
+  };
+  if(id){
+    const h = state.habits.find(x=>x.id===id);
+    Object.assign(h, payload);
+  } else {
+    state.habits.push({id:uid('h'), checks:{}, ...payload});
+  }
+  scheduleSave();
+  closeModal();
+  renderHabits();
+  renderDashboard();
+  showToast('Hábito salvo.');
+}
+
+function deleteHabit(id){
+  if(!confirm('Excluir este hábito e todo o histórico dele?')) return;
+  state.habits = state.habits.filter(x=>x.id!==id);
+  scheduleSave();
+  renderHabits();
+  renderDashboard();
+  showToast('Hábito excluído.');
+}
+
+/* ============================================================
+   REVISÕES
+============================================================ */
+const weeklyQuestions = [
+  "Quais são as três prioridades da semana?",
+  "Qual é o maior risco da semana?",
+  "Como posso facilitar minha execução?"
+];
+const monthlyQuestions = [
+  "O que evoluiu?",
+  "O que não evoluiu?",
+  "O que aprendi?",
+  "Do que me orgulho?",
+  "O que muda no próximo mês?"
 ];
 
+let currentReviewType = 'weekly';
 
-// ============================================
-// PRIORIDADES POSSÍVEIS
-// ============================================
+function setReviewType(type){
+  currentReviewType = type;
+  document.getElementById('btnWeekly').classList.toggle('primary', type==='weekly');
+  document.getElementById('btnMonthly').classList.toggle('primary', type==='monthly');
+  renderReviewForm();
+}
 
-const priorities = [
-  "Muito Alta",
-  "Alta",
-  "Média-Alta",
-  "Média",
-  "Baixa"
-];
+function renderReviewForm(){
+  const form = document.getElementById('reviewForm');
+  const questions = currentReviewType==='weekly' ? weeklyQuestions : monthlyQuestions;
+  form.innerHTML = questions.map((q,i)=>`
+    <div class="review-q">
+      <label>${q}</label>
+      <textarea id="rq_${i}" placeholder="Escreva sua resposta..."></textarea>
+    </div>
+  `).join('');
+  renderReviewHistory();
+  // set button state
+  document.getElementById('btnWeekly').classList.toggle('primary', currentReviewType==='weekly');
+  document.getElementById('btnMonthly').classList.toggle('primary', currentReviewType==='monthly');
+}
 
+function saveReview(){
+  const questions = currentReviewType==='weekly' ? weeklyQuestions : monthlyQuestions;
+  const answers = questions.map((q,i)=>({question:q, answer: document.getElementById('rq_'+i).value.trim()}));
+  if(answers.every(a=>!a.answer)){ showToast('Escreva ao menos uma resposta.'); return; }
+  state.reviews.unshift({id:uid('r'), type:currentReviewType, date: todayStr(), answers});
+  scheduleSave();
+  renderReviewForm();
+  showToast('Revisão salva.');
+}
 
-// ============================================
-// CICLO ATUAL
-// ============================================
+function renderReviewHistory(){
+  const el = document.getElementById('reviewHistory');
+  if(!state.reviews.length){
+    el.innerHTML = `<div class="empty-note">Nenhuma revisão registrada ainda.</div>`;
+    return;
+  }
+  el.innerHTML = state.reviews.slice(0,15).map(r=>`
+    <div class="review-history-item">
+      <div class="rdate">${fmtDate(r.date)} · ${r.type==='weekly'?'Revisão semanal':'Revisão mensal'} <button class="button small icon danger" style="float:right" onclick="deleteReview('${r.id}')">✕</button></div>
+      ${r.answers.filter(a=>a.answer).map(a=>`<div class="rq">${escapeHtml(a.question)}</div><div class="ra">${escapeHtml(a.answer)}</div>`).join('')}
+    </div>
+  `).join('');
+}
 
-const currentCycle = {
-  year: 2026,
+function deleteReview(id){
+  state.reviews = state.reviews.filter(x=>x.id!==id);
+  scheduleSave();
+  renderReviewHistory();
+}
 
-  focus: [
-    "Saúde",
-    "Espanhol",
-    "MBA"
-  ],
+/* ============================================================
+   DECISÕES
+============================================================ */
+function renderDecisions(){
+  const el = document.getElementById('decisionsList');
+  el.innerHTML = state.decisions.map((d,i)=>`
+    <div class="priority-item">
+      <div class="priority-number">${String(i+1).padStart(2,'0')}</div>
+      <div><div class="priority-title">${escapeHtml(d)}</div></div>
+    </div>
+  `).join('');
+}
 
-  principle:
-    "Os objetivos de longo prazo permanecem. O foco atual é temporário.",
+/* ============================================================
+   MODAL GENÉRICO
+============================================================ */
+function setModal(html){
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+document.getElementById('modalOverlay').addEventListener('click', (e)=>{
+  if(e.target.id==='modalOverlay') closeModal();
+});
 
-  reminder:
-    "Não preciso executar tudo agora. Preciso continuar me direcionando."
-};
+/* ============================================================
+   RENDER ALL
+============================================================ */
+function renderAll(){
+  populateAreaSelects();
+  renderDashboard();
+  renderAreas();
+  renderGoals();
+  renderProjects();
+  renderHabits();
+  renderDecisions();
+  setReviewType('weekly');
+}
 
-
-// ============================================
-// ESTRUTURA DE DADOS COMPLETA
-// ============================================
-
-const personalOperatingSystem = {
-  vision,
-  purpose,
-  lifeAreas,
-  goals,
-  projects,
-  routines,
-  indicators,
-
-  yearlyPriorities,
-  cyclePrinciples,
-  planningHorizons,
-  systemHierarchy,
-
-  weeklyReview,
-  monthlyReview,
-  cycleReview,
-  yearlyReview,
-
-  purposeQuotes,
-  importantDecisions,
-
-  appPrinciples,
-
-  statuses,
-  priorities,
-
-  currentCycle
-};
-
-
-// ============================================
-// INFORMAÇÕES AINDA NÃO DEFINIDAS
-// ============================================
-
-const undefinedInformation = [
-  "Meta exata de peso",
-  "Meta exata de patrimônio para o carro",
-  "Valor mensal de investimento",
-  "Valor necessário para a casa",
-  "Modelo do carro",
-  "Orçamento do carro",
-  "Data para compra da casa",
-  "Nível exato de espanhol desejado em novembro de 2026",
-  "Prova específica de proficiência em espanhol",
-  "Esporte específico",
-  "Hobby específico",
-  "Número desejado de amizades",
-  "Número exato de palestras por ano",
-  "Meta salarial",
-  "Data específica para promoção à coordenação",
-  "Data específica para chegar à gerência",
-  "Lista definitiva de países que deseja conhecer",
-  "Meta formal de inglês",
-  "Fórmula definitiva do score pessoal",
-  "Pesos definitivos dos indicadores",
-  "Automação Habit Tracker → Indicadores",
-  "Arquitetura técnica definitiva do aplicativo"
-];
-
-
-// ============================================
-// REGRA CENTRAL DO SISTEMA
-// ============================================
-
-const systemNorthStar =
-  "Você não está tentando criar um sistema para controlar sua vida. " +
-  "Está criando um sistema para não perder de vista a vida que decidiu construir.";
-
-
-// ============================================
-// FLUXO CENTRAL
-// ============================================
-
-const operatingFlow = [
-  "VISÃO",
-  "ÁREAS",
-  "OBJETIVOS",
-  "PRIORIDADES DO CICLO",
-  "PROJETOS",
-  "PRÓXIMAS AÇÕES",
-  "HÁBITOS",
-  "INDICADORES",
-  "REVISÃO",
-  "AJUSTE"
-];
-
-
-// ============================================
-// REGRA DE EXECUÇÃO
-// ============================================
-
-const executionRule = {
-  problem:
-    "Meu principal gargalo é execução e consistência, não planejamento.",
-
-  therefore: [
-    "Não adicionar complexidade sem necessidade.",
-    "Não criar novos objetivos apenas porque parecem interessantes.",
-    "Não transformar o sistema em uma atividade de procrastinação produtiva.",
-    "Sempre que possível, transformar planejamento em próxima ação concreta.",
-    "Revisar o sistema periodicamente e simplificá-lo quando necessário."
-  ]
-};
-
-
-// ============================================
-// PRINCÍPIO FINAL
-// ============================================
-
-const finalPrinciple =
-  "O sistema deve mostrar direção, execução e evolução.";
-  </script>
-
+initAuth();
+</script>
 </body>
-
 </html>
