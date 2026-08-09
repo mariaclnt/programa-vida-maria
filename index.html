@@ -197,6 +197,14 @@ button{cursor:pointer}
 .modal-overlay{position:fixed;inset:0;background:rgba(20,18,15,.4);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 20px;overflow:auto}
 .modal-overlay.open{display:flex}
 .modal{background:var(--surface);border-radius:20px;width:100%;max-width:520px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal.wide{max-width:680px}
+.area-card{cursor:pointer}
+.area-detail-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.area-detail-section{margin-top:18px}
+.area-detail-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.area-detail-item{border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.adi-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.adi-title{font-size:12.5px;font-weight:700}
 .modal h2{font-size:17px;letter-spacing:-.02em;margin-bottom:16px}
 .field{margin-bottom:13px}
 .field label{display:block;font-size:11.5px;font-weight:700;color:var(--text-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
@@ -780,7 +788,7 @@ function renderAreas(){
   grid.innerHTML = state.areas.map(a=>{
     const goalsInArea = state.goals.filter(g=>g.area===a.id && g.status==='active');
     const avg = goalsInArea.length ? Math.round(goalsInArea.reduce((s,g)=>s+goalProgress(g),0)/goalsInArea.length) : null;
-    return `<article class="card area-card">
+    return `<article class="card area-card" onclick="openAreaDetail('${a.id}')" role="button" tabindex="0">
       <div class="area-top">
         <div class="area-icon">${a.icon}</div>
         ${a.tag?`<span class="tag ${a.tagColor}">${a.tag}</span>`:''}
@@ -793,6 +801,88 @@ function renderAreas(){
       </div>
     </article>`;
   }).join('');
+}
+
+/* ---- Painel de detalhes da área (metas + projetos + hábitos) ---- */
+function openAreaDetail(areaId){
+  const a = state.areas.find(x=>x.id===areaId);
+  if(!a) return;
+
+  const goalsInArea = state.goals.filter(g=>g.area===areaId);
+  const projectsInArea = state.projects.filter(p=>p.area===areaId);
+  const habitsInArea = state.habits.filter(h=>h.area===areaId);
+
+  const goalsHtml = goalsInArea.length ? goalsInArea.map(g=>`
+    <div class="area-detail-item">
+      <div class="adi-top">
+        <span class="adi-title">${escapeHtml(g.name)}</span>
+        <span class="tag ${priorityTagColor(g.priority)}">${g.priority}</span>
+        ${g.status!=='active'?'<span class="tag red">Arquivada</span>':''}
+      </div>
+      <div class="goal-bottom" style="margin-top:8px">
+        <div class="progress"><div class="progress-bar" style="width:${goalProgress(g)}%"></div></div>
+        <div class="goal-percent">${goalProgress(g)}%</div>
+      </div>
+      <div class="small muted" style="margin-top:4px">${escapeHtml(goalMetricText(g))}</div>
+    </div>
+  `).join('') : `<div class="empty-note">Nenhuma meta nesta área ainda.</div>`;
+
+  const projectsHtml = projectsInArea.length ? projectsInArea.map(p=>`
+    <div class="area-detail-item">
+      <div class="adi-top">
+        <span class="adi-title">${escapeHtml(p.name)}</span>
+        <span class="tag">${escapeHtml(p.status)}</span>
+      </div>
+      <div class="goal-bottom" style="margin-top:8px">
+        <div class="progress"><div class="progress-bar" style="width:${projectProgress(p)}%"></div></div>
+        <div class="goal-percent">${projectProgress(p)}%</div>
+      </div>
+      <div class="small muted" style="margin-top:4px">${(p.tasks||[]).filter(t=>t.done).length}/${(p.tasks||[]).length} tarefas concluídas</div>
+    </div>
+  `).join('') : `<div class="empty-note">Nenhum projeto nesta área ainda.</div>`;
+
+  const today = todayStr();
+  const habitsHtml = habitsInArea.length ? habitsInArea.map(h=>{
+    const done = !!h.checks[today];
+    return `<div class="area-detail-item">
+      <div class="adi-top">
+        <button class="habit-check-btn ${done?'done':''}" style="width:28px;height:28px;font-size:12px" onclick="toggleHabitCheck('${h.id}','${today}'); refreshAreaDetail('${areaId}')">${done?'✓':''}</button>
+        <span class="adi-title">${escapeHtml(h.name)}</span>
+        <span class="small muted" style="margin-left:auto">${habitStreak(h)} dias seguidos · ${habitCompletionRate(h)}%</span>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty-note">Nenhum hábito nesta área ainda.</div>`;
+
+  setModal(`
+    <div class="area-detail-header">
+      <div class="area-icon" style="width:40px;height:40px;font-size:18px">${a.icon}</div>
+      <div>
+        <h2 style="margin-bottom:2px">${escapeHtml(a.name)}</h2>
+        <div class="small muted">${escapeHtml(a.meaning||'')}</div>
+      </div>
+    </div>
+    <div class="area-detail-section">
+      <div class="eyebrow">Metas (${goalsInArea.length})</div>
+      <div class="area-detail-list">${goalsHtml}</div>
+    </div>
+    <div class="area-detail-section">
+      <div class="eyebrow">Projetos (${projectsInArea.length})</div>
+      <div class="area-detail-list">${projectsHtml}</div>
+    </div>
+    <div class="area-detail-section">
+      <div class="eyebrow">Hábitos (${habitsInArea.length})</div>
+      <div class="area-detail-list">${habitsHtml}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="button" onclick="closeModal()">Fechar</button>
+    </div>
+  `, true);
+}
+
+function refreshAreaDetail(areaId){
+  openAreaDetail(areaId);
+  renderDashboard();
+  renderHabits();
 }
 
 /* ============================================================
@@ -1335,8 +1425,10 @@ function renderDecisions(){
 /* ============================================================
    MODAL GENÉRICO
 ============================================================ */
-function setModal(html){
-  document.getElementById('modalBody').innerHTML = html;
+function setModal(html, wide){
+  const body = document.getElementById('modalBody');
+  body.innerHTML = html;
+  body.classList.toggle('wide', !!wide);
   document.getElementById('modalOverlay').classList.add('open');
 }
 function closeModal(){
