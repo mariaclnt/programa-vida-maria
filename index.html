@@ -180,6 +180,34 @@ button{cursor:pointer}
 .calendar .day.done{background:var(--green-soft);color:var(--green);font-weight:700;border-color:var(--green)}
 .calendar .day.empty{background:transparent;cursor:default}
 .calendar .day.future{opacity:.35;cursor:default}
+
+.checkbox-list{max-height:190px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:4px 12px;background:var(--surface-soft)}
+.checkbox-row{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:12.5px;border-bottom:1px solid var(--border)}
+.checkbox-row:last-child{border-bottom:none}
+.checkbox-row input{accent-color:var(--accent)}
+
+.project-goals{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.project-goal-row{display:flex;align-items:center;gap:12px;background:var(--surface-soft);border-radius:12px;padding:10px 12px}
+.project-goal-info{flex:1;min-width:0}
+.project-goal-name{font-size:12px;font-weight:700}
+.project-goal-info .progress{margin-top:6px}
+.project-goal-actions{display:flex;gap:6px;flex-shrink:0}
+.goal-links{margin-top:8px;display:flex;flex-direction:column;gap:2px}
+
+.view-toggle{display:flex;gap:6px}
+
+.heatmap-scroll{overflow-x:auto;margin-top:14px;padding-bottom:4px}
+.heatmap{display:flex;flex-direction:column;gap:4px;min-width:max-content}
+.heatmap-row{display:flex;align-items:center;gap:4px}
+.heatmap-label{width:150px;flex-shrink:0;font-size:11px;font-weight:600;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:8px}
+.heatmap-daynum{width:20px;flex-shrink:0;text-align:center;font-size:9px;color:var(--text-soft)}
+.heatmap-daynum.today{color:var(--text);font-weight:700}
+.heatmap-cell{width:20px;height:20px;flex-shrink:0;border-radius:5px;background:var(--surface-soft);cursor:pointer;border:1px solid transparent}
+.heatmap-cell.done{border-color:rgba(0,0,0,.1)}
+.heatmap-cell.future{opacity:.3;cursor:default}
+.habit-color-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
+.heatmap-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.heatmap-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-soft)}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
 .cal-nav b{font-size:12px}
 
@@ -429,7 +457,14 @@ button{cursor:pointer}
           </div>
           <button class="button primary" onclick="openHabitModal()">+ Novo hábito</button>
         </div>
+        <div class="toolbar">
+          <div class="view-toggle">
+            <button class="button small primary" id="habitViewListBtn" onclick="setHabitView('list')">Lista</button>
+            <button class="button small" id="habitViewMonthBtn" onclick="setHabitView('month')">Visão mensal</button>
+          </div>
+        </div>
         <div class="habit-list" id="habitList"></div>
+        <div id="habitMonthView" style="display:none"></div>
       </section>
 
       <section class="page" id="page-reviews">
@@ -568,24 +603,24 @@ function defaultState(){
       {id:"g2", name:"Desenvolver espanhol profissional", description:"Tornar o espanhol uma competência profissional suficiente para conversas, treinamentos e assessments.", area:"desenvolvimento", priority:"Muito Alta", deadline:"2026-11-30", metricType:"hours", unit:"horas estudadas", current:18, target:30, status:"active", history:[]},
       {id:"g3", name:"Concluir o MBA", description:"Manter evolução e concluir as entregas do MBA.", area:"carreira", priority:"Alta", deadline:"2026-12-31", metricType:"tasks", unit:"entregas concluídas", current:8, target:15, status:"active", history:[]},
       {id:"g4", name:"Construir liberdade financeira e patrimônio", description:"Manter segurança financeira e construir reserva rumo ao patrimônio.", area:"financas", priority:"Alta", deadline:"", metricType:"currency", unit:"reserva", current:33000, target:60000, status:"active", history:[]},
-      {id:"g5", name:"Retomar frequência de treinos", description:"Manter regularidade de atividade física.", area:"saude", priority:"Alta", deadline:"", metricType:"frequency", unit:"treinos/mês", current:11, target:12, status:"active", history:[]}
+      {id:"g5", name:"Manter 4 treinos por semana", description:"Manter regularidade de atividade física através da academia.", area:"saude", priority:"Alta", deadline:"", metricType:"frequency", unit:"treinos/semana", current:2, target:4, status:"active", history:[]}
     ],
     projects: [
-      {id:"p1", name:"Retorno à Academia", area:"saude", goalId:"g1", description:"Reconstruir a rotina de treinos após a interrupção.", status:"Em andamento",
-        tasks:[{id:"t1",title:"Voltar à academia",done:true},{id:"t2",title:"Manter 3 treinos por semana",done:false}]},
-      {id:"p2", name:"Desenvolvimento do espanhol profissional", area:"desenvolvimento", goalId:"g2", description:"Desenvolver espanhol suficiente para atuar com Argentina e México.", status:"Em andamento",
-        tasks:[{id:"t3",title:"Fazer curso disponível",done:true},{id:"t4",title:"Praticar conversação semanal",done:false},{id:"t5",title:"Avaliar proficiência",done:false}]},
-      {id:"p3", name:"Concluir MBA", area:"carreira", goalId:"g3", description:"Concluir a pós-graduação em andamento.", status:"Em andamento",
-        tasks:[{id:"t6",title:"Acompanhar aulas",done:true},{id:"t7",title:"Realizar provas",done:true},{id:"t8",title:"Entregar atividades no prazo",done:false}]},
-      {id:"p4", name:"Comprar primeiro carro", area:"financas", goalId:"g4", description:"Comprar o primeiro carro sem comprometer a estabilidade financeira.", status:"Planejamento",
-        tasks:[{id:"t9",title:"Definir modelo",done:false},{id:"t10",title:"Definir orçamento",done:false},{id:"t11",title:"Criar fundo",done:false}]}
+      {id:"p1", name:"Retorno à Academia", area:"saude", goalIds:["g5"], description:"Reconstruir a rotina de treinos após a interrupção.", status:"Em andamento",
+        tasks:[{id:"t1",title:"Voltar à academia",done:true}]},
+      {id:"p2", name:"Desenvolvimento do espanhol profissional", area:"desenvolvimento", goalIds:["g2"], description:"Desenvolver espanhol suficiente para atuar com Argentina e México.", status:"Em andamento",
+        tasks:[{id:"t3",title:"Fazer curso disponível",done:true},{id:"t5",title:"Avaliar proficiência",done:false}]},
+      {id:"p3", name:"Concluir MBA", area:"carreira", goalIds:["g3"], description:"Concluir a pós-graduação em andamento.", status:"Em andamento",
+        tasks:[{id:"t6",title:"Acompanhar aulas",done:true},{id:"t7",title:"Realizar provas",done:true}]},
+      {id:"p4", name:"Comprar primeiro carro", area:"financas", goalIds:["g4"], description:"Comprar o primeiro carro sem comprometer a estabilidade financeira.", status:"Planejamento",
+        tasks:[{id:"t9",title:"Definir modelo",done:false},{id:"t10",title:"Definir orçamento",done:false}]}
     ],
     habits: [
-      {id:"h1", name:"Academia", area:"saude", frequency:3, checks:{}},
-      {id:"h2", name:"Estudo de espanhol", area:"desenvolvimento", frequency:5, checks:{}},
-      {id:"h3", name:"Água (2,5L)", area:"saude", frequency:7, checks:{}},
-      {id:"h4", name:"Organização da casa (15min)", area:"organizacao", frequency:7, checks:{}},
-      {id:"h5", name:"Sono (7h30)", area:"saude", frequency:7, checks:{}}
+      {id:"h1", name:"Academia", area:"saude", frequency:4, goalId:"g5", checks:{}},
+      {id:"h2", name:"Estudo de espanhol", area:"desenvolvimento", frequency:5, goalId:"g2", checks:{}},
+      {id:"h3", name:"Água (2,5L)", area:"saude", frequency:7, goalId:null, checks:{}},
+      {id:"h4", name:"Organização da casa (15min)", area:"organizacao", frequency:7, goalId:null, checks:{}},
+      {id:"h5", name:"Sono (7h30)", area:"saude", frequency:7, goalId:null, checks:{}}
     ],
     reviews: [],
     decisions: [
@@ -615,6 +650,11 @@ async function loadState(){
       if(!state.reviews) state.reviews = [];
       if(!state.decisions) state.decisions = def.decisions;
       if(!state.areas) state.areas = def.areas;
+      (state.projects||[]).forEach(p=>{
+        if(p.goalId && (!p.goalIds || !p.goalIds.length)) p.goalIds = [p.goalId];
+        if(!p.goalIds) p.goalIds = [];
+        delete p.goalId;
+      });
     } else {
       state = defaultState();
       await persist();
@@ -788,8 +828,7 @@ function renderAreas(){
   grid.innerHTML = state.areas.map(a=>{
     const goalsInArea = state.goals.filter(g=>g.area===a.id && g.status==='active');
     const avg = goalsInArea.length ? Math.round(goalsInArea.reduce((s,g)=>s+goalProgress(g),0)/goalsInArea.length) : null;
-    return `<article class="card area-card" onclick="openAreaDetail('${a.id}')" role="button" tabindex="0">
-      <div class="area-top">
+    return `<article class="card area-card" onclick="openAreaDetail('${a.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAreaDetail('${a.id}')}" role="button" tabindex="0">      <div class="area-top">
         <div class="area-icon">${a.icon}</div>
         ${a.tag?`<span class="tag ${a.tagColor}">${a.tag}</span>`:''}
       </div>
@@ -907,6 +946,8 @@ function renderGoals(){
   container.innerHTML = list.map(g=>{
     const pct = goalProgress(g);
     const lastHist = g.history && g.history.length ? g.history[g.history.length-1] : null;
+    const linkedProjects = state.projects.filter(p=>(p.goalIds||[]).includes(g.id));
+    const linkedHabits = state.habits.filter(h=>h.goalId===g.id);
     return `<article class="card goal-card">
       <div class="goal-header">
         <div>
@@ -931,6 +972,10 @@ function renderGoals(){
         <div class="goal-percent">${pct}%</div>
       </div>
       <div class="goal-history">${escapeHtml(goalMetricText(g))}${lastHist?` · último registro em ${fmtDate(lastHist.date)}`:''}</div>
+      ${(linkedProjects.length||linkedHabits.length)?`<div class="goal-links">
+        ${linkedProjects.length?`<div class="small muted">◇ Projeto: ${linkedProjects.map(p=>escapeHtml(p.name)).join(', ')}</div>`:''}
+        ${linkedHabits.length?`<div class="small muted">✓ Sustentada por: ${linkedHabits.map(h=>escapeHtml(h.name)).join(', ')}</div>`:''}
+      </div>`:''}
     </article>`;
   }).join('');
 }
@@ -1054,7 +1099,15 @@ function saveProgress(id){
 /* ============================================================
    RENDER: PROJETOS
 ============================================================ */
+function projectGoals(p){
+  return (p.goalIds||[]).map(gid=>state.goals.find(g=>g.id===gid)).filter(Boolean);
+}
+
 function projectProgress(p){
+  const goals = projectGoals(p);
+  if(goals.length){
+    return Math.round(goals.reduce((s,g)=>s+goalProgress(g),0)/goals.length);
+  }
   if(!p.tasks || !p.tasks.length) return 0;
   const done = p.tasks.filter(t=>t.done).length;
   return Math.round((done/p.tasks.length)*100);
@@ -1063,16 +1116,34 @@ function projectProgress(p){
 function renderProjects(){
   const container = document.getElementById('projectList');
   if(!state.projects.length){
-    container.innerHTML = `<div class="empty-state">Nenhum projeto ainda. Crie um projeto e vincule a uma meta.</div>`;
+    container.innerHTML = `<div class="empty-state">Nenhum projeto ainda. Crie um projeto e vincule as metas que ele deve entregar.</div>`;
     return;
   }
   container.innerHTML = state.projects.map(p=>{
     const pct = projectProgress(p);
-    const goal = p.goalId ? state.goals.find(g=>g.id===p.goalId) : null;
+    const goals = projectGoals(p);
+    const goalsHtml = goals.length ? `<div class="project-goals">
+        <div class="eyebrow">Metas deste projeto</div>
+        ${goals.map(g=>{
+          const gp = goalProgress(g);
+          return `<div class="project-goal-row">
+            <div class="project-goal-info">
+              <div class="project-goal-name">${escapeHtml(g.name)}</div>
+              <div class="progress"><div class="progress-bar" style="width:${gp}%"></div></div>
+              <div class="small muted" style="margin-top:4px">${escapeHtml(goalMetricText(g))} · ${gp}%</div>
+            </div>
+            <div class="project-goal-actions">
+              <button class="button small icon" title="+1 hoje" onclick="quickIncrementGoal('${g.id}',1)">+1</button>
+              <button class="button small icon" title="Registrar progresso" onclick="openProgressModal('${g.id}')">✎</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : `<div class="small muted" style="margin-top:10px">Nenhuma meta vinculada ainda. Edite o projeto para colocar as metas que ele deve entregar.</div>`;
     return `<article class="card project-card">
       <div class="project-top">
         <div>
           <span class="tag">${areaName(p.area)}</span>
+          <span class="tag blue">${escapeHtml(p.status||'')}</span>
           <div class="project-title">${escapeHtml(p.name)}</div>
         </div>
         <div class="goal-actions">
@@ -1081,11 +1152,12 @@ function renderProjects(){
         </div>
       </div>
       <div class="project-description">${escapeHtml(p.description||'')}</div>
-      ${goal?`<div class="small muted" style="margin-top:8px">Vinculado à meta: ${escapeHtml(goal.name)}</div>`:''}
+      ${goalsHtml}
       <div class="goal-bottom" style="margin-top:12px">
         <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
         <div class="goal-percent">${pct}%</div>
       </div>
+      <div class="eyebrow" style="margin-top:14px">Passos</div>
       <div class="task-list">
         ${(p.tasks||[]).map(t=>`
           <div class="task-item ${t.done?'done':''}">
@@ -1095,7 +1167,7 @@ function renderProjects(){
           </div>`).join('')}
       </div>
       <div class="task-add">
-        <input placeholder="Adicionar tarefa..." id="newtask_${p.id}" onkeydown="if(event.key==='Enter'){addTask('${p.id}')}">
+        <input placeholder="Adicionar passo..." id="newtask_${p.id}" onkeydown="if(event.key==='Enter'){addTask('${p.id}')}">
         <button class="button small" onclick="addTask('${p.id}')">+</button>
       </div>
     </article>`;
@@ -1105,7 +1177,11 @@ function renderProjects(){
 function openProjectModal(id){
   const p = id ? state.projects.find(x=>x.id===id) : null;
   const areaOptions = state.areas.map(a=>`<option value="${a.id}" ${p&&p.area===a.id?'selected':''}>${escapeHtml(a.name)}</option>`).join('');
-  const goalOptions = '<option value="">Nenhuma</option>' + state.goals.map(g=>`<option value="${g.id}" ${p&&p.goalId===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('');
+  const goalOptions = state.goals.length ? state.goals.map(g=>`
+      <label class="checkbox-row">
+        <input type="checkbox" class="f_pgoal" value="${g.id}" ${p&&(p.goalIds||[]).includes(g.id)?'checked':''}>
+        <span>${escapeHtml(g.name)}</span>
+      </label>`).join('') : '<div class="small muted" style="padding:8px 0">Nenhuma meta cadastrada ainda. Crie metas na aba Metas.</div>';
   const statusOptions = ["Não iniciado","Planejamento","Em andamento","Em pausa","Concluído"].map(s=>`<option ${p&&p.status===s?'selected':''}>${s}</option>`).join('');
   setModal(`
     <h2>${p?'Editar projeto':'Novo projeto'}</h2>
@@ -1115,7 +1191,7 @@ function openProjectModal(id){
       <div class="field"><label>Área</label><select id="f_parea">${areaOptions}</select></div>
       <div class="field"><label>Status</label><select id="f_pstatus">${statusOptions}</select></div>
     </div>
-    <div class="field"><label>Vincular a meta (opcional)</label><select id="f_pgoal">${goalOptions}</select></div>
+    <div class="field"><label>Metas deste projeto (o que ele precisa entregar)</label><div class="checkbox-list">${goalOptions}</div></div>
     <div class="modal-actions">
       <button class="button" onclick="closeModal()">Cancelar</button>
       <button class="button primary" onclick="saveProject('${p?p.id:''}')">Salvar projeto</button>
@@ -1126,12 +1202,13 @@ function openProjectModal(id){
 function saveProject(id){
   const name = document.getElementById('f_pname').value.trim();
   if(!name){ showToast('Dê um nome para o projeto.'); return; }
+  const goalIds = Array.from(document.querySelectorAll('.f_pgoal:checked')).map(el=>el.value);
   const payload = {
     name,
     description: document.getElementById('f_pdesc').value.trim(),
     area: document.getElementById('f_parea').value,
     status: document.getElementById('f_pstatus').value,
-    goalId: document.getElementById('f_pgoal').value || null
+    goalIds
   };
   if(id){
     const p = state.projects.find(x=>x.id===id);
@@ -1142,7 +1219,21 @@ function saveProject(id){
   scheduleSave();
   closeModal();
   renderProjects();
+  renderGoals();
   showToast('Projeto salvo.');
+}
+
+function quickIncrementGoal(gid, delta){
+  const g = state.goals.find(x=>x.id===gid);
+  if(!g) return;
+  g.current = Math.max(0, (Number(g.current)||0) + delta);
+  g.history = g.history || [];
+  g.history.push({date: todayStr(), value: g.current, note:'Atualização rápida pelo projeto'});
+  scheduleSave();
+  renderProjects();
+  renderGoals();
+  renderDashboard();
+  showToast('Progresso da meta atualizado.');
 }
 
 function deleteProject(id){
@@ -1220,12 +1311,13 @@ function renderHabits(){
     const streak = habitStreak(h);
     const rate = habitCompletionRate(h);
     const isExpanded = expandedHabit===h.id;
+    const goal = h.goalId ? state.goals.find(g=>g.id===h.goalId) : null;
     return `<div>
       <div class="card habit-card">
         <button class="habit-check-btn ${done?'done':''}" onclick="toggleHabitCheck('${h.id}','${today}')" title="Marcar hoje">${done?'✓':''}</button>
         <div class="habit-info">
           <div class="habit-name">${escapeHtml(h.name)}</div>
-          <div class="habit-details">${areaName(h.area)} · meta ${h.frequency}x/semana · <span class="habit-cal-toggle" onclick="toggleHabitCalendar('${h.id}')">${isExpanded?'ocultar calendário':'ver calendário'}</span></div>
+          <div class="habit-details">${areaName(h.area)} · meta ${h.frequency}x/semana${goal?` · sustenta: ${escapeHtml(goal.name)}`:''} · <span class="habit-cal-toggle" onclick="toggleHabitCalendar('${h.id}')">${isExpanded?'ocultar calendário':'ver calendário'}</span></div>
         </div>
         <div class="habit-stats">
           <div class="habit-stat"><b>${streak}</b><span>sequência</span></div>
@@ -1247,7 +1339,90 @@ function toggleHabitCheck(hid, dateStr){
   else h.checks[dateStr] = true;
   scheduleSave();
   renderHabits();
+  if(habitView==='month') renderHabitsMonth();
   renderDashboard();
+}
+
+/* ---- Visão mensal consolidada de hábitos ---- */
+let habitView = 'list';
+let habitsMonthOffset = 0;
+const habitColorPalette = ['#687c68','#a98b4d','#9b625c','#64798a','#8a6ba0','#4d8ba9','#a94d6f','#5c9b8f','#c07a3e','#6b7fa0'];
+
+function habitColor(h){
+  const idx = state.habits.findIndex(x=>x.id===h.id);
+  return habitColorPalette[idx % habitColorPalette.length];
+}
+
+function setHabitView(view){
+  habitView = view;
+  document.getElementById('habitViewListBtn').classList.toggle('primary', view==='list');
+  document.getElementById('habitViewMonthBtn').classList.toggle('primary', view==='month');
+  document.getElementById('habitList').style.display = view==='list' ? 'flex' : 'none';
+  document.getElementById('habitMonthView').style.display = view==='month' ? 'block' : 'none';
+  if(view==='month') renderHabitsMonth();
+}
+
+function changeHabitsMonth(delta){
+  habitsMonthOffset += delta;
+  renderHabitsMonth();
+}
+
+function renderHabitsMonth(){
+  const container = document.getElementById('habitMonthView');
+  if(!state.habits.length){
+    container.innerHTML = `<div class="empty-state">Nenhum hábito cadastrado ainda.</div>`;
+    return;
+  }
+  const base = new Date();
+  base.setDate(1);
+  base.setMonth(base.getMonth()+habitsMonthOffset);
+  const year = base.getFullYear(), month = base.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const monthName = base.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  const now = new Date();
+  const todayD = todayStr();
+
+  let header = `<div class="heatmap-row"><div class="heatmap-label"></div>`;
+  for(let d=1; d<=daysInMonth; d++){
+    const dateObj = new Date(year, month, d);
+    const isToday = todayStr(dateObj)===todayD;
+    header += `<div class="heatmap-daynum ${isToday?'today':''}">${d}</div>`;
+  }
+  header += `</div>`;
+
+  const rows = state.habits.map(h=>{
+    const color = habitColor(h);
+    let cells = `<div class="heatmap-row"><div class="heatmap-label" title="${escapeHtml(h.name)}"><span class="habit-color-dot" style="background:${color}"></span>${escapeHtml(h.name)}</div>`;
+    for(let d=1; d<=daysInMonth; d++){
+      const dateObj = new Date(year, month, d);
+      const ds = todayStr(dateObj);
+      const isFuture = dateObj > now;
+      const done = !!h.checks[ds];
+      const style = done ? `background:${color}` : '';
+      cells += `<div class="heatmap-cell ${isFuture?'future':''} ${done?'done':''}" style="${style}" ${isFuture?'':`onclick="toggleHabitCheck('${h.id}','${ds}')"`} title="${escapeHtml(h.name)} · ${fmtDate(ds)}"></div>`;
+    }
+    cells += `</div>`;
+    return cells;
+  }).join('');
+
+  const legend = state.habits.map(h=>`<div class="heatmap-legend-item"><span class="habit-color-dot" style="background:${habitColor(h)}"></span>${escapeHtml(h.name)}</div>`).join('');
+
+  container.innerHTML = `
+    <div class="card card-padding">
+      <div class="cal-nav">
+        <button class="button small" onclick="changeHabitsMonth(-1)">‹</button>
+        <b>${monthName.charAt(0).toUpperCase()+monthName.slice(1)}</b>
+        <button class="button small" onclick="changeHabitsMonth(1)">›</button>
+      </div>
+      <div class="heatmap-scroll">
+        <div class="heatmap">
+          ${header}
+          ${rows}
+        </div>
+      </div>
+      <div class="heatmap-legend">${legend}</div>
+    </div>
+  `;
 }
 
 function toggleHabitCalendar(hid){
@@ -1295,6 +1470,7 @@ function changeMonth(hid, delta){
 function openHabitModal(id){
   const h = id ? state.habits.find(x=>x.id===id) : null;
   const areaOptions = state.areas.map(a=>`<option value="${a.id}" ${h&&h.area===a.id?'selected':''}>${escapeHtml(a.name)}</option>`).join('');
+  const goalOptions = '<option value="">Nenhuma</option>' + state.goals.map(g=>`<option value="${g.id}" ${h&&h.goalId===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('');
   setModal(`
     <h2>${h?'Editar hábito':'Novo hábito'}</h2>
     <div class="field"><label>Nome</label><input id="f_hname" value="${h?escapeHtml(h.name):''}" placeholder="Ex: Academia"></div>
@@ -1302,6 +1478,7 @@ function openHabitModal(id){
       <div class="field"><label>Área</label><select id="f_harea">${areaOptions}</select></div>
       <div class="field"><label>Frequência (x por semana)</label><input type="number" min="1" max="7" id="f_hfreq" value="${h?h.frequency:3}"></div>
     </div>
+    <div class="field"><label>Este hábito sustenta qual meta? (opcional)</label><select id="f_hgoal">${goalOptions}</select></div>
     <div class="modal-actions">
       <button class="button" onclick="closeModal()">Cancelar</button>
       <button class="button primary" onclick="saveHabit('${h?h.id:''}')">Salvar hábito</button>
@@ -1315,7 +1492,8 @@ function saveHabit(id){
   const payload = {
     name,
     area: document.getElementById('f_harea').value,
-    frequency: Math.max(1, Math.min(7, Number(document.getElementById('f_hfreq').value)||1))
+    frequency: Math.max(1, Math.min(7, Number(document.getElementById('f_hfreq').value)||1)),
+    goalId: document.getElementById('f_hgoal').value || null
   };
   if(id){
     const h = state.habits.find(x=>x.id===id);
@@ -1326,6 +1504,7 @@ function saveHabit(id){
   scheduleSave();
   closeModal();
   renderHabits();
+  renderGoals();
   renderDashboard();
   showToast('Hábito salvo.');
 }
