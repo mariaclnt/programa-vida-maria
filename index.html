@@ -666,7 +666,10 @@ async function sendMigrationLink(){
   msg.textContent = 'Enviando link...';
   msg.className = 'auth-msg';
   localStorage.setItem('ms_migrating', '1');
-  const { error } = await sb.auth.signInWithOtp({ email });
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: window.location.href }
+  });
   if(error){
     localStorage.removeItem('ms_migrating');
     msg.textContent = 'Não foi possível enviar: ' + error.message;
