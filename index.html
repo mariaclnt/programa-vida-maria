@@ -285,6 +285,8 @@ button{cursor:pointer}
 .auth-msg{font-size:12px;margin-top:12px;color:var(--text-soft)}
 .auth-msg.success{color:var(--green)}
 .auth-msg.error{color:var(--red)}
+.auth-toggle{margin-top:14px;text-align:center;font-size:12px;color:var(--text-soft)}
+.auth-toggle a{color:var(--accent);text-decoration:underline;cursor:pointer}
 .sync-status{font-size:10.5px;color:var(--text-soft);display:flex;align-items:center;gap:6px}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
 .sync-dot.saving{background:var(--yellow)}
@@ -320,10 +322,34 @@ button{cursor:pointer}
 <div class="auth-overlay" id="authOverlay">
   <div class="auth-card">
     <h1>Meu Sistema</h1>
-    <p>Entre com seu e-mail para sincronizar seus dados entre dispositivos. Você vai receber um link mágico — sem senha.</p>
+    <p id="authIntro">Entre com seu e-mail e senha pra sincronizar seus dados entre dispositivos.</p>
     <input type="email" id="authEmail" placeholder="seu@email.com" autocomplete="email">
-    <button class="button primary" style="width:100%" onclick="sendMagicLink()">Enviar link mágico</button>
+    <input type="password" id="authPassword" placeholder="Sua senha" autocomplete="current-password" onkeydown="if(event.key==='Enter'){authSubmit()}">
+    <button class="button primary" style="width:100%" id="authSubmitBtn" onclick="authSubmit()">Entrar</button>
     <div class="auth-msg" id="authMsg"></div>
+    <div class="auth-toggle" id="authToggle">Ainda não tem conta? <a onclick="toggleAuthMode()">Criar conta</a></div>
+
+    <div class="auth-toggle" id="migrateToggle"><a onclick="showMigrateForm()">Já usava por link mágico? Recuperar acesso</a></div>
+
+    <div id="migrateForm" style="display:none">
+      <p>Digite o e-mail que você já usava com o link mágico. Vamos te mandar um link de acesso — depois de entrar, você define sua senha nova sem perder nada do que já estava salvo.</p>
+      <input type="email" id="migrateEmail" placeholder="seu@email.com" autocomplete="email">
+      <button class="button primary" style="width:100%" onclick="sendMigrationLink()">Enviar link de acesso</button>
+      <div class="auth-msg" id="migrateMsg"></div>
+      <div class="auth-toggle"><a onclick="hideMigrateForm()">Voltar</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="auth-overlay" id="setPasswordOverlay" style="display:none">
+  <div class="auth-card">
+    <h1>Quase lá</h1>
+    <p>Você entrou com o link mágico. Agora defina uma senha pra usar esse e-mail com login por senha daqui pra frente — seus dados continuam os mesmos.</p>
+    <input type="password" id="newPassword" placeholder="Nova senha (mín. 6 caracteres)" autocomplete="new-password">
+    <input type="password" id="newPasswordConfirm" placeholder="Confirme a nova senha" autocomplete="new-password" onkeydown="if(event.key==='Enter'){confirmSetPassword()}">
+    <button class="button primary" style="width:100%" onclick="confirmSetPassword()">Definir senha e continuar</button>
+    <div class="auth-msg" id="setPasswordMsg"></div>
+    <div class="auth-toggle"><a onclick="cancelMigration()">Cancelar e sair</a></div>
   </div>
 </div>
 
@@ -598,6 +624,7 @@ async function initAuth(){
       await onAuthed(session.user);
     } else if(event === 'SIGNED_OUT'){
       currentUser = null;
+      document.getElementById('setPasswordOverlay').style.display = 'none';
       document.getElementById('authOverlay').style.display = 'flex';
     }
   });
@@ -605,26 +632,135 @@ async function initAuth(){
 
 async function onAuthed(user){
   currentUser = user;
-  document.getElementById('authOverlay').style.display = 'none';
   document.getElementById('userEmail').textContent = user.email || '';
+  document.getElementById('authOverlay').style.display = 'none';
+
+  // Se o usuário chegou aqui pelo link de recuperação (migração do login antigo),
+  // não carrega o dashboard ainda: primeiro ele define a senha nesta MESMA conta
+  // (mesmo user_id), garantindo que os dados salvos continuam vinculados a ele.
+  if(localStorage.getItem('ms_migrating') === '1'){
+    document.getElementById('setPasswordOverlay').style.display = 'flex';
+    return;
+  }
   await loadState();
 }
 
-async function sendMagicLink(){
-  const email = document.getElementById('authEmail').value.trim();
-  const msg = document.getElementById('authMsg');
-  if(!email){ msg.textContent = 'Digite um e-mail válido.'; msg.className='auth-msg error'; return; }
-  msg.textContent = 'Enviando...'; msg.className = 'auth-msg';
-  const { error } = await sb.auth.signInWithOtp({
-    email,
-    options: { emailRedirectTo: window.location.href }
-  });
+function showMigrateForm(){
+  document.getElementById('migrateForm').style.display = 'block';
+  document.getElementById('migrateToggle').style.display = 'none';
+}
+
+function hideMigrateForm(){
+  document.getElementById('migrateForm').style.display = 'none';
+  document.getElementById('migrateToggle').style.display = 'block';
+}
+
+async function sendMigrationLink(){
+  const email = document.getElementById('migrateEmail').value.trim();
+  const msg = document.getElementById('migrateMsg');
+  if(!email){
+    msg.textContent = 'Digite seu e-mail.';
+    msg.className = 'auth-msg error';
+    return;
+  }
+  msg.textContent = 'Enviando link...';
+  msg.className = 'auth-msg';
+  localStorage.setItem('ms_migrating', '1');
+  const { error } = await sb.auth.signInWithOtp({ email });
   if(error){
+    localStorage.removeItem('ms_migrating');
     msg.textContent = 'Não foi possível enviar: ' + error.message;
     msg.className = 'auth-msg error';
+    return;
+  }
+  msg.textContent = 'Link enviado! Abra seu e-mail e clique no link pra continuar por aqui.';
+  msg.className = 'auth-msg success';
+}
+
+async function confirmSetPassword(){
+  const p1 = document.getElementById('newPassword').value;
+  const p2 = document.getElementById('newPasswordConfirm').value;
+  const msg = document.getElementById('setPasswordMsg');
+  if(!p1 || p1.length < 6){
+    msg.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
+    msg.className = 'auth-msg error';
+    return;
+  }
+  if(p1 !== p2){
+    msg.textContent = 'As senhas não coincidem.';
+    msg.className = 'auth-msg error';
+    return;
+  }
+  msg.textContent = 'Salvando senha...';
+  msg.className = 'auth-msg';
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  if(error){
+    msg.textContent = 'Não foi possível salvar: ' + error.message;
+    msg.className = 'auth-msg error';
+    return;
+  }
+  localStorage.removeItem('ms_migrating');
+  document.getElementById('setPasswordOverlay').style.display = 'none';
+  msg.textContent = '';
+  await loadState();
+}
+
+async function cancelMigration(){
+  localStorage.removeItem('ms_migrating');
+  await sb.auth.signOut();
+}
+
+let authMode = 'signin';
+
+function toggleAuthMode(){
+  authMode = authMode==='signin' ? 'signup' : 'signin';
+  document.getElementById('authSubmitBtn').textContent = authMode==='signin' ? 'Entrar' : 'Criar conta';
+  document.getElementById('authIntro').textContent = authMode==='signin'
+    ? 'Entre com seu e-mail e senha pra sincronizar seus dados entre dispositivos.'
+    : 'Crie sua conta com e-mail e senha. Depois é só entrar direto, sem abrir o e-mail toda vez.';
+  document.getElementById('authToggle').innerHTML = authMode==='signin'
+    ? 'Ainda não tem conta? <a onclick="toggleAuthMode()">Criar conta</a>'
+    : 'Já tem conta? <a onclick="toggleAuthMode()">Entrar</a>';
+  const msg = document.getElementById('authMsg');
+  msg.textContent = ''; msg.className = 'auth-msg';
+}
+
+async function authSubmit(){
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const msg = document.getElementById('authMsg');
+
+  if(!email || !password){
+    msg.textContent = 'Preencha e-mail e senha.';
+    msg.className = 'auth-msg error';
+    return;
+  }
+  if(password.length < 6){
+    msg.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
+    msg.className = 'auth-msg error';
+    return;
+  }
+
+  msg.textContent = authMode==='signin' ? 'Entrando...' : 'Criando conta...';
+  msg.className = 'auth-msg';
+
+  if(authMode==='signin'){
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if(error){
+      msg.textContent = 'Não foi possível entrar: ' + (error.message==='Invalid login credentials' ? 'e-mail ou senha incorretos.' : error.message);
+      msg.className = 'auth-msg error';
+    }
+    // login bem-sucedido é tratado por onAuthStateChange (SIGNED_IN)
   } else {
-    msg.textContent = 'Link enviado! Verifique seu e-mail e clique no link para entrar.';
-    msg.className = 'auth-msg success';
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error){
+      msg.textContent = 'Não foi possível criar a conta: ' + error.message;
+      msg.className = 'auth-msg error';
+    } else if(!data.session){
+      msg.textContent = 'Conta criada! Verifique seu e-mail e confirme antes de entrar (só dessa vez).';
+      msg.className = 'auth-msg success';
+    }
+    // se já vier com sessão, onAuthStateChange cuida do resto
   }
 }
 
@@ -1681,6 +1817,20 @@ function buildReviewContext(){
   return `METAS ATIVAS:\n${goalsText}\n\nPROJETOS:\n${projectsText}\n\nHÁBITOS:\n${habitsText}\n\n${lastReviewText}`;
 }
 
+/* ---- Ponte com a IA via Supabase Edge Function ----
+   O app nunca chama api.anthropic.com direto do navegador (não tem como
+   autenticar isso com segurança fora do preview do Claude.ai). Em vez
+   disso, chama a função "ai-proxy" do seu próprio projeto Supabase, que
+   guarda a chave da Anthropic em segredo e repassa a chamada. ---- */
+async function callAI({system, messages, max_tokens}){
+  const { data, error } = await sb.functions.invoke('ai-proxy', {
+    body: { system: system||undefined, messages, max_tokens: max_tokens||800 }
+  });
+  if(error) throw error;
+  if(!data || !data.text) throw new Error('Resposta vazia da IA');
+  return data.text;
+}
+
 async function runAIReview(){
   const btn = document.getElementById('aiReviewBtn');
   const result = document.getElementById('aiReviewResult');
@@ -1706,18 +1856,8 @@ Seja direto, sem enrolação e sem frases motivacionais genéricas. Baseie-se ap
 DADOS:
 ${context}`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-    if(!response.ok) throw new Error('Falha na chamada da API');
-    const data = await response.json();
-    const text = (data.content||[]).map(b=>b.text||'').join('\n').trim();
+    const response = await callAI({ messages: [{ role: "user", content: prompt }], max_tokens: 1000 });
+    const text = response.trim();
     if(!text) throw new Error('Resposta vazia');
     result.innerHTML = `<div class="ai-review-result">${escapeHtml(text)}</div><div class="ai-review-meta">Gerado agora · com base nos dados atuais do seu sistema.</div>`;
   } catch(err){
@@ -1860,19 +2000,8 @@ ${context}`;
 
     const history = state.aiChat.slice(-16).map(m=>({role:m.role, content:m.content}));
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 500,
-        system: systemPrompt,
-        messages: history
-      })
-    });
-    if(!response.ok) throw new Error('Falha na chamada da API');
-    const data = await response.json();
-    const reply = (data.content||[]).map(b=>b.text||'').join('\n').trim() || 'Não consegui pensar em nada agora. Tenta de novo?';
+    const reply = (await callAI({ system: systemPrompt, messages: history, max_tokens: 500 })).trim()
+      || 'Não consegui pensar em nada agora. Tenta de novo?';
     state.aiChat.push({role:'assistant', content:reply});
   } catch(err){
     console.error(err);
